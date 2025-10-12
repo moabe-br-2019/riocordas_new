@@ -525,12 +525,10 @@ document.addEventListener('DOMContentLoaded', function() {
     function submitToBaserow(data: Record<string, string | number>) {
         showLoadingIndicator();
 
-        const apiToken = 'es4OIHz6dV93cJiImNVLg15rC57rjwHq';
-
-        fetch('https://api.baserow.io/api/database/rows/table/258308/?user_field_names=true', {
+        // Envia para a Cloudflare Function que tem acesso ao token secreto
+        fetch('/api/submit-form', {
             method: 'POST',
             headers: {
-                'Authorization': `Token ${apiToken}`,
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(data)
@@ -538,7 +536,7 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => {
             if (!response.ok) {
                 return response.json().then(errorData => {
-                    throw new Error(`Erro na API: ${JSON.stringify(errorData)}`);
+                    throw new Error(`Erro na API: ${errorData.error || JSON.stringify(errorData)}`);
                 });
             }
             return response.json();

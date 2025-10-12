@@ -1,0 +1,5 @@
+# Exemplo de variáveis de ambiente para desenvolvimento local
+# Copie este arquivo para .dev.vars e adicione seus valores reais
+# NUNCA comite o arquivo .dev.vars no git!
+
+baserow_token=seu_token_aqui
