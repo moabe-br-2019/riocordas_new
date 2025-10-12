@@ -1,0 +1,83 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Hero from '../components/Hero.astro';
+import About from '../components/About.astro';
+import Videos from '../components/Videos.astro';
+import Services from '../components/Services.astro';
+import Testimonials from '../components/Testimonials.astro';
+import CTA from '../components/CTA.astro';
+import Footer from '../components/Footer.astro';
+import ContactModal from '../components/ContactModal.astro';
+import WhatsAppButton from '../components/WhatsAppButton.astro';
+---
+
+<Layout 
+    title="Músicos para Casamento RJ | Quarteto de Cordas - Rio Cordas"
+    description="Grupo Rio Cordas: músicos profissionais para casamento no Rio de Janeiro desde 2011. Violino, violoncelo, saxofone. 850+ eventos. Orçamento grátis!"
+>
+    <Header />
+    <Hero />
+    <About />
+    <Videos />
+    <Services />
+    <Testimonials />
+    <CTA />
+    <Footer />
+    <ContactModal />
+    <WhatsAppButton />
+</Layout>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+    const navLinks = document.querySelector('.nav-links');
+    const header = document.querySelector('header');
+    
+    if (!header) return;
+    
+    const headerHeight = header.offsetHeight;
+    const offset = 50;
+    
+    if (mobileMenuToggle && navLinks) {
+        mobileMenuToggle.addEventListener('click', function() {
+            navLinks.classList.toggle('active');
+            this.classList.toggle('active');
+        });
+        
+        const allNavLinks = document.querySelectorAll('a[href^="#"]:not(.cta-button):not(.hero-cta)');
+        allNavLinks.forEach(link => {
+            link.addEventListener('click', function(this: HTMLElement, e) {
+                e.preventDefault();
+
+                const targetId = this.getAttribute('href');
+
+                if (targetId && targetId !== '#') {
+                    const targetSection = document.querySelector(targetId);
+                    
+                    if (targetSection) {
+                        const targetPosition = targetSection.getBoundingClientRect().top + window.scrollY - headerHeight - offset;
+                        
+                        window.scrollTo({
+                            top: targetPosition,
+                            behavior: 'smooth'
+                        });
+                        
+                        if (window.innerWidth <= 768) {
+                            navLinks.classList.remove('active');
+                            mobileMenuToggle.classList.remove('active');
+                        }
+                    }
+                }
+            });
+        });
+        
+        window.addEventListener('resize', function() {
+            if (window.innerWidth > 768) {
+                navLinks.classList.remove('active');
+                mobileMenuToggle.classList.remove('active');
+            }
+        });
+    }
+});
+</script>

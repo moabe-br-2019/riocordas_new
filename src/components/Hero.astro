@@ -1,0 +1,105 @@
+---
+---
+
+<section class="hero" id="home">
+    <div class="hero-content">
+        <p class="hero-subtitle">Desde 2011 no Rio de Janeiro</p>
+        <h1 class="hero-title">Orquestra e Músicos para Casamento no Rio de Janeiro</h1>
+        <p class="hero-description">Transformamos o seu evento em uma experiência musical inesquecível com arranjos únicos e músicos de excelência. Violino, violoncelo, saxofone e mais instrumentos para sua cerimônia perfeita.</p>
+        <button class="hero-cta" id="heroCtaButton" aria-label="Solicitar proposta de orçamento">Solicitar Orçamento Grátis</button>
+    </div>
+</section>
+
+<style>
+.hero {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    background-image: url('/imgs/piano.jpg');
+    background-size: cover;
+    background-position: center;
+    position: relative;
+}
+
+.hero::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.hero-content {
+    position: relative;
+    z-index: 1;
+    max-width: 800px;
+    margin-left: 80px;
+    color: var(--white);
+}
+
+.hero-subtitle {
+    font-size: 18px;
+    font-weight: 400;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+}
+
+.hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 64px;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 30px;
+}
+
+.hero-description {
+    font-size: 18px;
+    max-width: 600px;
+    margin-bottom: 40px;
+}
+
+.hero-cta {
+    background-color: var(--accent-color);
+    color: var(--white);
+    padding: 15px 40px;
+    font-size: 16px;
+    font-weight: 500;
+    font-family: 'Montserrat', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.hero-cta:hover {
+    background-color: #d93600;
+}
+
+@media (max-width: 768px) {
+    .hero-content {
+        margin-left: 20px;
+    }
+    
+    .hero-title {
+        font-size: 36px;
+    }
+    
+    .hero-description {
+        font-size: 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-content {
+        margin-left: 15px;
+    }
+    
+    .hero-title {
+        font-size: 28px;
+    }
+}
+</style>

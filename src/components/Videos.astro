@@ -1,0 +1,306 @@
+---
+const videos = [
+    {
+        id: '_zv0pi3_vYs',
+        title: 'Hallelujah - Violino e Voz',
+        alt: 'Músicos tocando Hallelujah em casamento - Rio Cordas'
+    },
+    {
+        id: 'VMqwezBeyKY',
+        title: 'Quarteto Instrumental - Bossa/MPB',
+        alt: 'Quarteto instrumental tocando Bossa Nova e MPB em casamento'
+    },
+    {
+        id: 'Vs7qSUtE13A',
+        title: 'Viva La Vida - Coldplay',
+        alt: 'Viva La Vida ao vivo em cerimônia de casamento'
+    },
+    {
+        id: '_7_iAWm9PGw',
+        title: 'Garota de Ipanema - Tom Jobim',
+        alt: 'Garota de Ipanema - música brasileira para casamento'
+    },
+    {
+        id: 'Vwco43ksaUQ',
+        title: 'A Thousand Years - Christina Perri',
+        alt: 'A Thousand Years - música para entrada de noiva'
+    },
+    {
+        id: 'RKXvRTzk78U',
+        title: 'Pompa e Circunstância - Elgar',
+        alt: 'Pompa e Circunstância - música clássica para casamento'
+    }
+];
+---
+
+<section class="videos" id="videos">
+    <div class="container">
+        <div class="section-header">
+            <p class="section-subtitle">Nossos Vídeos</p>
+            <h2 class="section-title">Assista Nossas Performances em Casamentos</h2>
+        </div>
+        <div class="videos-grid">
+            {videos.map(video => (
+                <div class="video-card" data-video-id={video.id}>
+                    <div class="video-thumbnail">
+                        <img src={`https://img.youtube.com/vi/${video.id}/maxresdefault.jpg`} alt={video.alt} loading="lazy">
+                        <div class="play-button">
+                            <i class="fas fa-play"></i>
+                        </div>
+                    </div>
+                    <h3 class="video-title">{video.title}</h3>
+                </div>
+            ))}
+        </div>
+    </div>
+</section>
+
+<!-- Video Lightbox Modal -->
+<div class="video-lightbox" id="videoLightbox" role="dialog" aria-modal="true" aria-label="Player de vídeo">
+    <div class="lightbox-content">
+        <button class="close-lightbox" aria-label="Fechar vídeo">
+            <i class="fas fa-times"></i>
+        </button>
+        <div class="video-container">
+            <iframe id="videoFrame" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+    </div>
+</div>
+
+<style>
+.videos {
+    padding: 120px 0;
+    background-color: var(--light-gray);
+}
+
+.section-header {
+    text-align: center;
+    margin-bottom: 80px;
+}
+
+.section-subtitle {
+    color: var(--accent-color);
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 15px;
+}
+
+.section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 40px;
+    font-weight: 700;
+    position: relative;
+    display: inline-block;
+    padding-bottom: 20px;
+}
+
+.section-title::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 2px;
+    background-color: var(--accent-color);
+}
+
+.videos-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+}
+
+.video-card {
+    background-color: var(--white);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease;
+    cursor: pointer;
+}
+
+.video-card:hover {
+    transform: translateY(-10px);
+}
+
+.video-thumbnail {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 16 / 9;
+}
+
+.video-thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.video-card:hover .video-thumbnail img {
+    transform: scale(1.05);
+}
+
+.play-button {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 70px;
+    height: 70px;
+    background-color: rgba(242, 60, 0, 0.9);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--white);
+    font-size: 24px;
+    opacity: 0.9;
+    transition: all 0.3s ease;
+}
+
+.video-card:hover .play-button {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.1);
+}
+
+.video-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 600;
+    padding: 20px;
+    text-align: center;
+}
+
+.video-lightbox {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.9);
+    z-index: 1100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.video-lightbox.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.lightbox-content {
+    position: relative;
+    width: 80%;
+    max-width: 900px;
+}
+
+.close-lightbox {
+    position: absolute;
+    top: -40px;
+    right: 0;
+    color: var(--white);
+    font-size: 24px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.close-lightbox:hover {
+    transform: scale(1.2);
+}
+
+.video-container {
+    position: relative;
+    padding-bottom: 56.25%;
+    height: 0;
+    overflow: hidden;
+}
+
+.video-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+@media (max-width: 1024px) {
+    .videos-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .videos-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .lightbox-content {
+        width: 95%;
+    }
+}
+
+@media (max-width: 480px) {
+    .videos {
+        padding: 80px 0;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const videoCards = document.querySelectorAll('.video-card');
+    const lightbox = document.getElementById('videoLightbox');
+    const videoFrame = document.getElementById('videoFrame') as HTMLIFrameElement | null;
+    const closeLightbox = document.querySelector('.close-lightbox');
+
+    if (!lightbox || !videoFrame || !closeLightbox) {
+        return;
+    }
+
+    function openLightbox(videoId: string) {
+        if (videoFrame && lightbox) {
+            videoFrame.src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+            lightbox.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+    }
+
+    function closeLightboxFunc() {
+        if (videoFrame && lightbox) {
+            videoFrame.src = '';
+            lightbox.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+    }
+
+    videoCards.forEach(card => {
+        card.addEventListener('click', function(this: HTMLElement) {
+            const videoId = this.getAttribute('data-video-id');
+            if (videoId) {
+                openLightbox(videoId);
+            }
+        });
+    });
+
+    closeLightbox.addEventListener('click', closeLightboxFunc);
+
+    lightbox.addEventListener('click', function(e) {
+        if (e.target === lightbox) {
+            closeLightboxFunc();
+        }
+    });
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && lightbox.classList.contains('active')) {
+            closeLightboxFunc();
+        }
+    });
+});
+</script>

@@ -1,0 +1,179 @@
+---
+const services = [
+    {
+        title: 'Cerimônia de Casamento',
+        description: 'Cada momento da sua cerimônia será acompanhado pela trilha sonora perfeita: música de recepção dos convidados, entrada dos padrinhos, entrada da noiva e saída dos noivos. Repertório clássico e contemporâneo.',
+        image: '/imgs/casamento.jpg',
+        alt: 'Cerimônia de casamento'
+    },
+    {
+        title: 'Recepção e Coquetel',
+        description: 'Criamos a atmosfera ideal para a celebração com um repertório elegante de jazz, bossa nova e MPB que convida à socialização. Formações de trio, quarteto ou quinteto disponíveis.',
+        image: '/imgs/reception.avif',
+        alt: 'Recepção e coquetel'
+    },
+    {
+        title: 'Eventos Corporativos',
+        description: 'Elevamos o nível do seu evento corporativo com apresentações musicais sofisticadas e adequadas ao perfil da sua empresa. Congressos, jantares executivos e lançamentos de produtos.',
+        image: '/imgs/corporate.jpg',
+        alt: 'Eventos corporativos'
+    }
+];
+---
+
+<section class="services" id="services">
+    <div class="container">
+        <div class="section-header">
+            <p class="section-subtitle">Nossos Serviços</p>
+            <h2 class="section-title">Música ao Vivo Personalizada para Cada Momento</h2>
+        </div>
+        <div class="services-grid">
+            {services.map(service => (
+                <article class="service-card">
+                    <div class="service-icon" style={`background-image: url('${service.image}');`} role="img" aria-label={service.alt}></div>
+                    <h3 class="service-title">{service.title}</h3>
+                    <p class="service-description">{service.description}</p>
+                    <a href="#contact" class="service-link" aria-label={`Solicitar orçamento para ${service.title.toLowerCase()}`}>Solicitar Orçamento</a>
+                </article>
+            ))}
+        </div>
+    </div>
+</section>
+
+<style>
+.services {
+    padding: 120px 0;
+    background-color: var(--light-gray);
+}
+
+.section-header {
+    text-align: center;
+    margin-bottom: 80px;
+}
+
+.section-subtitle {
+    color: var(--accent-color);
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 15px;
+}
+
+.section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 40px;
+    font-weight: 700;
+    position: relative;
+    display: inline-block;
+    padding-bottom: 20px;
+}
+
+.section-title::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 2px;
+    background-color: var(--accent-color);
+}
+
+.services-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 40px;
+}
+
+.service-card {
+    background-color: var(--white);
+    padding: 60px 40px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s;
+}
+
+.service-card:hover {
+    transform: translateY(-10px);
+}
+
+.service-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    margin: 0 auto 30px;
+    background-size: cover;
+    background-position: center;
+    transition: transform 0.3s ease;
+    overflow: hidden;
+}
+
+.service-card:hover .service-icon {
+    transform: scale(1.1);
+}
+
+.service-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+.service-description {
+    font-size: 15px;
+    line-height: 1.7;
+    margin-bottom: 30px;
+}
+
+.service-link {
+    color: var(--accent-color);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    position: relative;
+    padding-bottom: 5px;
+}
+
+.service-link::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background-color: var(--accent-color);
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.3s;
+}
+
+.service-link:hover::after {
+    transform: scaleX(1);
+    transform-origin: left;
+}
+
+@media (max-width: 1024px) {
+    .services-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .services-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .services {
+        padding: 80px 0;
+    }
+    
+    .service-card {
+        padding: 40px 20px;
+    }
+}
+</style>

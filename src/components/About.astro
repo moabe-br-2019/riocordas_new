@@ -1,0 +1,190 @@
+---
+---
+
+<section class="about" id="about">
+    <div class="container">
+        <div class="section-header">
+            <p class="section-subtitle">Conheça a Rio Cordas</p>
+            <h2 class="section-title">Música ao Vivo para Casamentos e Eventos desde 2011</h2>
+        </div>
+        <div class="about-content">
+            <div class="about-image">
+                <img src="/imgs/moabe-hugo.jpg" alt="Moabe e Hugo - Fundadores do Grupo Rio Cordas, músicos profissionais para casamento" class="founders-image" width="500" height="auto">
+            </div>
+            <div class="about-text">
+                <h3 class="about-tagline">Criando momentos inesquecíveis através da música desde 2011</h3>
+                
+                <p class="about-description">O <strong>Grupo Rio Cordas</strong> é uma equipe de <strong>músicos profissionais especializados em casamentos no Rio de Janeiro</strong>, oferecendo música ao vivo personalizada para cerimônias e eventos desde 2011. Com um repertório diversificado de música clássica, MPB, bossa nova e contemporânea, adaptamos nossos serviços às preferências de clientes exigentes.</p>
+                
+                <p class="about-description">Nossas formações instrumentais incluem <strong>violino, violoncelo, saxofone, teclado, voz e trompete triunfal</strong>, permitindo desde um elegante <strong>quarteto de cordas</strong> até formações maiores. Cada repertório é cuidadosamente selecionado para refletir o estilo e a personalidade dos noivos, garantindo que cada evento se torne uma experiência verdadeiramente inesquecível.</p>
+                
+                <div class="about-stats">
+                    <div class="stat">
+                        <p class="stat-number">13+</p>
+                        <p class="stat-title">Anos de Experiência</p>
+                    </div>
+                    <div class="stat">
+                        <p class="stat-number">850+</p>
+                        <p class="stat-title">Eventos Realizados</p>
+                    </div>
+                    <div class="stat">
+                        <p class="stat-number">100%</p>
+                        <p class="stat-title">Clientes Satisfeitos</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+.about {
+    padding: 120px 0;
+}
+
+.section-header {
+    text-align: center;
+    margin-bottom: 80px;
+}
+
+.section-subtitle {
+    color: var(--accent-color);
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 15px;
+}
+
+.section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 40px;
+    font-weight: 700;
+    position: relative;
+    display: inline-block;
+    padding-bottom: 20px;
+}
+
+.section-title::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 2px;
+    background-color: var(--accent-color);
+}
+
+.about-content {
+    display: flex;
+    gap: 60px;
+    align-items: center;
+}
+
+.about-image {
+    flex: 1;
+    height: 600px;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+}
+
+.founders-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.about-image:hover .founders-image {
+    transform: scale(1.05);
+}
+
+.about-text {
+    flex: 1;
+}
+
+.about-tagline {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    font-weight: 500;
+    font-style: italic;
+    margin-bottom: 30px;
+    position: relative;
+    padding-left: 30px;
+}
+
+.about-tagline::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 10px;
+    width: 20px;
+    height: 2px;
+    background-color: var(--accent-color);
+}
+
+.about-description {
+    font-size: 16px;
+    line-height: 1.8;
+    margin-bottom: 40px;
+}
+
+.about-stats {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 60px;
+}
+
+.stat {
+    text-align: center;
+}
+
+.stat-number {
+    font-family: 'Playfair Display', serif;
+    font-size: 48px;
+    font-weight: 700;
+    color: var(--accent-color);
+    margin-bottom: 5px;
+}
+
+.stat-title {
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+@media (max-width: 1024px) {
+    .about-content {
+        flex-direction: column;
+    }
+    
+    .about-image {
+        width: 100%;
+        height: 400px;
+        margin-bottom: 40px;
+    }
+    
+    .about-text {
+        width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .about-stats {
+        flex-direction: column;
+        gap: 30px;
+    }
+}
+
+@media (max-width: 480px) {
+    .about {
+        padding: 80px 0;
+    }
+    
+    .section-title {
+        font-size: 32px;
+    }
+}
+</style>

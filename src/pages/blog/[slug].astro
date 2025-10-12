@@ -1,0 +1,401 @@
+---
+import { getCollection } from 'astro:content';
+import type { GetStaticPaths } from 'astro';
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import WhatsAppButton from '../../components/WhatsAppButton.astro';
+import ContactModal from '../../components/ContactModal.astro';
+
+export const getStaticPaths = (async () => {
+  const blogPosts = await getCollection('blog');
+  return blogPosts.map(post => ({
+    params: { slug: post.slug },
+    props: { post },
+  }));
+}) satisfies GetStaticPaths;
+
+const { post } = Astro.props;
+const { Content } = await post.render();
+
+function formatDate(date: Date) {
+  return new Date(date).toLocaleDateString('pt-BR', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+}
+---
+
+<Layout 
+    title={`${post.data.title} | Blog Rio Cordas`}
+    description={post.data.description}
+>
+    <Header />
+    
+    <main class="post-page">
+        <article class="post">
+            <div class="post-header">
+                <div class="container">
+                    <div class="breadcrumb">
+                        <a href="/">Home</a>
+                        <span>›</span>
+                        <a href="/blog/">Blog</a>
+                        <span>›</span>
+                        <span>{post.data.title}</span>
+                    </div>
+                    
+                    <h1 class="post-title">{post.data.title}</h1>
+                    
+                    <div class="post-meta">
+                        <span class="post-date">
+                            <i class="far fa-calendar"></i>
+                            {formatDate(post.data.pubDate)}
+                        </span>
+                        <span class="post-author">
+                            <i class="far fa-user"></i>
+                            {post.data.author}
+                        </span>
+                    </div>
+                    
+                    {post.data.tags.length > 0 && (
+                        <div class="post-tags">
+                            {post.data.tags.map(tag => (
+                                <span class="tag">{tag}</span>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            </div>
+
+            {post.data.image && (
+                <div class="post-featured-image">
+                    <img src={post.data.image} alt={post.data.title} />
+                </div>
+            )}
+
+            <div class="post-content">
+                <div class="container">
+                    <div class="content-wrapper">
+                        <Content />
+                    </div>
+                </div>
+            </div>
+
+            <div class="post-footer">
+                <div class="container">
+                    <div class="share-section">
+                        <h3>Compartilhe este artigo</h3>
+                        <div class="share-buttons">
+                            <a href={`https://www.facebook.com/sharer/sharer.php?u=${Astro.url}`} target="_blank" rel="noopener" class="share-btn facebook">
+                                <i class="fab fa-facebook-f"></i>
+                            </a>
+                            <a href={`https://twitter.com/intent/tweet?url=${Astro.url}&text=${post.data.title}`} target="_blank" rel="noopener" class="share-btn twitter">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                            <a href={`https://wa.me/?text=${post.data.title} ${Astro.url}`} target="_blank" rel="noopener" class="share-btn whatsapp">
+                                <i class="fab fa-whatsapp"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="back-to-blog">
+                        <a href="/blog/" class="btn-back">
+                            ← Voltar para o Blog
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </article>
+    </main>
+
+    <Footer />
+    <ContactModal />
+    <WhatsAppButton />
+</Layout>
+
+<style>
+.post-page {
+    padding-top: 80px;
+}
+
+.post-header {
+    background: linear-gradient(135deg, #f23c00 0%, #d93600 100%);
+    color: white;
+    padding: 60px 0 40px;
+}
+
+.breadcrumb {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 30px;
+    font-size: 14px;
+}
+
+.breadcrumb a {
+    color: rgba(255, 255, 255, 0.9);
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.breadcrumb a:hover {
+    color: white;
+}
+
+.breadcrumb span:not(.tag) {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.post-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 42px;
+    font-weight: 700;
+    line-height: 1.3;
+    margin-bottom: 25px;
+    max-width: 900px;
+}
+
+.post-meta {
+    display: flex;
+    gap: 30px;
+    margin-bottom: 20px;
+    font-size: 15px;
+    opacity: 0.95;
+}
+
+.post-meta i {
+    margin-right: 8px;
+}
+
+.post-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.post-tags .tag {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 6px 15px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.post-featured-image {
+    width: 100%;
+    max-height: 500px;
+    overflow: hidden;
+}
+
+.post-featured-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.post-content {
+    padding: 80px 0;
+}
+
+.content-wrapper {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.content-wrapper :global(h2) {
+    font-family: 'Playfair Display', serif;
+    font-size: 32px;
+    font-weight: 600;
+    margin-top: 50px;
+    margin-bottom: 20px;
+    color: #222;
+}
+
+.content-wrapper :global(h3) {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    font-weight: 600;
+    margin-top: 40px;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.content-wrapper :global(p) {
+    font-size: 18px;
+    line-height: 1.8;
+    margin-bottom: 20px;
+    color: #444;
+}
+
+.content-wrapper :global(ul),
+.content-wrapper :global(ol) {
+    margin: 25px 0;
+    padding-left: 30px;
+}
+
+.content-wrapper :global(li) {
+    font-size: 18px;
+    line-height: 1.8;
+    margin-bottom: 10px;
+    color: #444;
+}
+
+.content-wrapper :global(blockquote) {
+    border-left: 4px solid var(--accent-color);
+    padding-left: 25px;
+    margin: 30px 0;
+    font-style: italic;
+    color: #666;
+}
+
+.content-wrapper :global(strong) {
+    color: var(--accent-color);
+    font-weight: 600;
+}
+
+.content-wrapper :global(a) {
+    color: var(--accent-color);
+    text-decoration: underline;
+}
+
+.content-wrapper :global(a:hover) {
+    color: #d93600;
+}
+
+.content-wrapper :global(hr) {
+    border: none;
+    border-top: 2px solid #e0e0e0;
+    margin: 50px 0;
+}
+
+.content-wrapper :global(table) {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 30px 0;
+}
+
+.content-wrapper :global(th),
+.content-wrapper :global(td) {
+    padding: 12px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+.content-wrapper :global(th) {
+    background-color: var(--accent-color);
+    color: white;
+    font-weight: 600;
+}
+
+.post-footer {
+    background-color: #f8f8f8;
+    padding: 60px 0;
+}
+
+.share-section {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.share-section h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.share-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.share-btn {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 20px;
+    transition: transform 0.3s ease;
+    text-decoration: none;
+}
+
+.share-btn:hover {
+    transform: translateY(-3px);
+}
+
+.share-btn.facebook {
+    background-color: #1877f2;
+}
+
+.share-btn.twitter {
+    background-color: #1da1f2;
+}
+
+.share-btn.whatsapp {
+    background-color: #25d366;
+}
+
+.back-to-blog {
+    text-align: center;
+}
+
+.btn-back {
+    display: inline-block;
+    background-color: var(--accent-color);
+    color: white;
+    padding: 15px 40px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: background-color 0.3s ease;
+}
+
+.btn-back:hover {
+    background-color: #d93600;
+}
+
+@media (max-width: 768px) {
+    .post-title {
+        font-size: 32px;
+    }
+    
+    .post-meta {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .content-wrapper :global(h2) {
+        font-size: 26px;
+    }
+    
+    .content-wrapper :global(h3) {
+        font-size: 22px;
+    }
+    
+    .content-wrapper :global(p),
+    .content-wrapper :global(li) {
+        font-size: 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .post-header {
+        padding: 40px 0 30px;
+    }
+    
+    .post-title {
+        font-size: 26px;
+    }
+    
+    .post-content {
+        padding: 60px 0;
+    }
+}
+</style>

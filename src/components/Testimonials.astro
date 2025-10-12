@@ -1,0 +1,151 @@
+---
+const testimonials = [
+    {
+        content: 'Obrigada por tudo!! Foi lindo, foi maravilhoso!! Ficamos muito satisfeitos com o trabalho de vocês!!',
+        author: 'Amanda Dória',
+        role: 'Noiva - Casamento 2019',
+        image: '/imgs/Screenshot_2019-10-06-16-47-21-938_com.instagram.android.jpg'
+    },
+    {
+        content: 'Agradeço muito ao Grupo Rio Cordas, tornaram a minha cerimônia de casamento mais que especial. Obrigada pela responsabilidade, comprometimento e atenção, principalmente hoje em dia em que as pessoas enganam, mentem e não arcam com os compromissos destruindo sonhos. Indico vocês de olhos fechados.',
+        author: 'Juliana Oliveira',
+        role: 'Noiva - Casamento 2018',
+        image: '/imgs/juliana-noiva.jpg'
+    }
+];
+---
+
+<section class="testimonials" id="testimonials">
+    <div class="container">
+        <div class="section-header">
+            <p class="section-subtitle">Depoimentos</p>
+            <h2 class="section-title">O Que Nossos Clientes Dizem Sobre Nós</h2>
+        </div>
+        <div class="testimonials-container">
+            {testimonials.map(testimonial => (
+                <article class="testimonial-card" itemscope itemtype="https://schema.org/Review">
+                    <meta itemprop="itemReviewed" content="Grupo Rio Cordas">
+                    <div itemprop="reviewRating" itemscope itemtype="https://schema.org/Rating">
+                        <meta itemprop="ratingValue" content="5">
+                        <meta itemprop="bestRating" content="5">
+                    </div>
+                    <p class="testimonial-content" itemprop="reviewBody">{testimonial.content}</p>
+                    <div class="testimonial-author" itemprop="author" itemscope itemtype="https://schema.org/Person">
+                        <div class="author-image" style={`background-image: url('${testimonial.image}');`}></div>
+                        <div class="author-details">
+                            <h4 itemprop="name">{testimonial.author}</h4>
+                            <p>{testimonial.role}</p>
+                        </div>
+                    </div>
+                </article>
+            ))}
+        </div>
+    </div>
+</section>
+
+<style>
+.testimonials {
+    padding: 120px 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.section-header {
+    text-align: center;
+    margin-bottom: 80px;
+}
+
+.section-subtitle {
+    color: var(--accent-color);
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 15px;
+}
+
+.section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 40px;
+    font-weight: 700;
+    position: relative;
+    display: inline-block;
+    padding-bottom: 20px;
+}
+
+.section-title::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 2px;
+    background-color: var(--accent-color);
+}
+
+.testimonials-container {
+    display: flex;
+    gap: 40px;
+}
+
+.testimonial-card {
+    background-color: var(--white);
+    padding: 60px 40px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    flex: 1;
+}
+
+.testimonial-content {
+    font-size: 18px;
+    line-height: 1.8;
+    font-style: italic;
+    margin-bottom: 30px;
+    position: relative;
+    padding-top: 30px;
+}
+
+.testimonial-author {
+    display: flex;
+    align-items: center;
+}
+
+.author-image {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    margin-right: 20px;
+    background-size: cover;
+    background-position: center;
+    border: 2px solid var(--accent-color);
+    transition: transform 0.3s ease;
+    overflow: hidden;
+}
+
+.testimonial-card:hover .author-image {
+    transform: scale(1.1);
+}
+
+.author-details h4 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.author-details p {
+    font-size: 14px;
+    color: #666;
+}
+
+@media (max-width: 1024px) {
+    .testimonials-container {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 480px) {
+    .testimonials {
+        padding: 80px 0;
+    }
+}
+</style>

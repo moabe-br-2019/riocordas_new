@@ -1,0 +1,694 @@
+---
+---
+
+<!-- Modal de Formulário de Contato -->
+<div class="contact-modal" id="contactModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-content">
+        <div class="modal-header" id="modalHeader">
+            <h3 id="modalTitle">Solicite seu Orçamento</h3>
+            <button class="close-modal" aria-label="Fechar formulário">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <p class="modal-description" id="modalDescription">Preencha o formulário abaixo e entraremos em contato o mais breve possível.</p>
+            <form id="contactForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="name">Nome*</label>
+                        <input type="text" id="name" name="name" required aria-required="true">
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email*</label>
+                        <input type="email" id="email" name="email" required aria-required="true">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="phone">Telefone (WhatsApp)*</label>
+                        <input type="tel" id="phone" name="phone" required aria-required="true">
+                    </div>
+                    <div class="form-group">
+                        <label for="weddingDate">Data do Casamento*</label>
+                        <input type="date" id="weddingDate" name="weddingDate" required aria-required="true">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="location">Local do Evento*</label>
+                        <input type="text" id="location" name="location" placeholder="Ex: Igreja São José - Tijuca" required aria-required="true">
+                    </div>
+                    <div class="form-group">
+                        <label for="guests">Número de Convidados</label>
+                        <input type="number" id="guests" name="guests" min="1" placeholder="Aproximadamente">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="message">Conte-nos sobre seu evento (opcional)</label>
+                    <textarea id="message" name="message" rows="3" placeholder="Estilo musical preferido, horário, formação desejada..."></textarea>
+                </div>
+                <button type="submit" class="form-button" aria-label="Enviar formulário de contato">Enviar Solicitação</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+.contact-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.contact-modal.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-content {
+    background-color: white;
+    width: 90%;
+    max-width: 600px;
+    border-radius: 8px;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+    transform: translateY(-20px);
+    transition: transform 0.4s ease;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.contact-modal.active .modal-content {
+    transform: translateY(0);
+}
+
+.modal-header {
+    padding: 20px 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    background: #f8f9fa;
+}
+
+.modal-header h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+}
+
+.close-modal {
+    cursor: pointer;
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    min-height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #555;
+    font-size: 20px;
+    transition: all 0.3s ease;
+    border-radius: 50%;
+    background: transparent;
+    border: none;
+    padding: 0;
+}
+
+.close-modal:hover {
+    color: #ff4444;
+    background: rgba(255, 68, 68, 0.1);
+    transform: rotate(90deg) scale(1.1);
+}
+
+.modal-body {
+    padding: 25px;
+}
+
+.modal-description {
+    margin-bottom: 25px;
+    font-size: 15px;
+    color: #555;
+    line-height: 1.5;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 14px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    box-sizing: border-box;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.1);
+}
+
+.form-button {
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    padding: 14px 25px;
+    width: 100%;
+    font-size: 16px;
+    font-weight: 500;
+    font-family: 'Montserrat', sans-serif;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.form-button:hover {
+    background-color: #d93600;
+}
+
+.form-group input.error,
+.form-group textarea.error {
+    border-color: #ff3b30;
+    box-shadow: 0 0 0 2px rgba(255, 59, 48, 0.1);
+}
+
+.error-message {
+    color: #ff3b30;
+    font-size: 12px;
+    margin-top: 5px;
+    display: none;
+}
+
+.error-message.active {
+    display: block;
+}
+
+.form-success {
+    text-align: center;
+    padding: 40px 30px;
+    display: none;
+}
+
+.form-success.active {
+    display: block;
+}
+
+.form-error {
+    text-align: center;
+    padding: 40px 30px;
+    display: none;
+}
+
+.form-error.active {
+    display: block;
+}
+
+.success-icon {
+    font-size: 70px;
+    color: #2ecc71;
+    margin-bottom: 20px;
+    animation: scaleIn 0.5s ease;
+}
+
+.error-icon {
+    font-size: 70px;
+    color: #ff3b30;
+    margin-bottom: 20px;
+    animation: scaleIn 0.5s ease;
+}
+
+@keyframes scaleIn {
+    0% {
+        transform: scale(0);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.success-title,
+.error-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px;
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.success-message,
+.form-error-message {
+    color: #555;
+    font-size: 16px;
+    line-height: 1.6;
+    margin-bottom: 30px;
+}
+
+.error-details {
+    color: #999;
+    font-size: 11px;
+    margin-bottom: 25px;
+    font-family: monospace;
+    background: #f5f5f5;
+    padding: 10px;
+    border-radius: 4px;
+    word-break: break-all;
+}
+
+.loading-indicator {
+    text-align: center;
+    padding: 60px 30px;
+    display: none;
+}
+
+.loading-indicator.active {
+    display: block;
+}
+
+.spinner {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid var(--accent-color);
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.success-close-button,
+.error-close-button {
+    background-color: #f23c00 !important;
+    color: white !important;
+    border: none !important;
+    padding: 16px 40px !important;
+    font-size: 16px !important;
+    font-weight: 600 !important;
+    font-family: 'Montserrat', sans-serif !important;
+    border-radius: 6px !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1.5px !important;
+    width: 100% !important;
+    display: block !important;
+    max-width: 300px !important;
+    margin: 0 auto !important;
+}
+
+.success-close-button:hover,
+.error-close-button:hover {
+    background-color: #d93600 !important;
+    transform: translateY(-3px) !important;
+    box-shadow: 0 8px 20px rgba(242, 60, 0, 0.4) !important;
+}
+
+@media (max-width: 768px) {
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+    
+    .modal-content {
+        width: 95%;
+        margin: 20px;
+    }
+    
+    .modal-header {
+        padding: 15px 20px;
+    }
+    
+    .modal-body {
+        padding: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .modal-header h3 {
+        font-size: 20px;
+    }
+    
+    .modal-body {
+        padding: 20px 15px;
+    }
+    
+    .form-button {
+        padding: 12px 20px;
+        font-size: 14px;
+    }
+    
+    .success-close-button,
+    .error-close-button {
+        padding: 12px 20px;
+        font-size: 14px;
+    }
+    
+    .success-icon,
+    .error-icon {
+        font-size: 60px;
+    }
+    
+    .success-title,
+    .error-title {
+        font-size: 22px;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const contactModal = document.getElementById('contactModal');
+    const closeModalButton = document.querySelector('.close-modal');
+    const contactForm = document.getElementById('contactForm') as HTMLFormElement | null;
+    const contactButtons = document.querySelectorAll('.cta-button, .hero-cta');
+    const modalHeader = document.getElementById('modalHeader');
+    const modalDescription = document.getElementById('modalDescription');
+    
+    function openModal() {
+        if (contactModal) {
+            contactModal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+    }
+    
+    function closeModalFunc() {
+        if (contactModal) {
+            contactModal.classList.remove('active');
+            document.body.style.overflow = '';
+            
+            // Aguarda a animação de fechamento antes de resetar
+            setTimeout(() => {
+                resetModal();
+            }, 300);
+        }
+    }
+    
+    function resetModal() {
+        // Remove mensagens de sucesso ou erro
+        const successMsg = document.querySelector('.form-success');
+        const errorMsg = document.querySelector('.form-error');
+        const loadingIndicator = document.querySelector('.loading-indicator');
+        
+        if (successMsg) successMsg.remove();
+        if (errorMsg) errorMsg.remove();
+        if (loadingIndicator) loadingIndicator.remove();
+        
+        // Restaura o header e descrição
+        if (modalHeader) modalHeader.style.display = 'flex';
+        if (modalDescription) modalDescription.style.display = 'block';
+        
+        // Restaura os elementos do formulário
+        if (contactForm) {
+            contactForm.reset();
+            const formElements = contactForm.querySelectorAll('input, textarea, select, button, label, .form-group');
+            formElements.forEach(element => {
+                (element as HTMLElement).style.display = '';
+            });
+        }
+    }
+    
+    contactButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            openModal();
+        });
+    });
+    
+    if (closeModalButton) {
+        closeModalButton.addEventListener('click', closeModalFunc);
+    }
+    
+    window.addEventListener('click', function(e) {
+        if (e.target === contactModal) closeModalFunc();
+    });
+    
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && contactModal && contactModal.classList.contains('active')) {
+            closeModalFunc();
+        }
+    });
+    
+    if (contactForm) {
+        contactForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            let isValid = validateForm();
+            
+            if (isValid) {
+                const formData = collectFormData();
+                submitToBaserow(formData);
+            }
+        });
+    }
+    
+    function validateForm() {
+        let isValid = true;
+        
+        const fields = [
+            { id: 'name', pattern: /\S+/, message: 'Por favor, informe seu nome.' },
+            { id: 'email', pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: 'Por favor, informe um email válido.' },
+            { id: 'phone', pattern: /\S+/, message: 'Por favor, informe seu telefone.' },
+            { id: 'weddingDate', pattern: /\S+/, message: 'Por favor, informe a data do casamento.' },
+            { id: 'location', pattern: /\S+/, message: 'Por favor, informe o local do evento.' }
+        ];
+        
+        fields.forEach(field => {
+            const input = document.getElementById(field.id) as HTMLInputElement | null;
+            if (input && !field.pattern.test(input.value)) {
+                markAsError(input, field.message);
+                isValid = false;
+            } else if (input) {
+                removeError(input);
+            }
+        });
+        
+        return isValid;
+    }
+    
+    function collectFormData() {
+        return {
+            "Nome do cliente": (document.getElementById('name') as HTMLInputElement)?.value.trim() || '',
+            "Data do evento": (document.getElementById('weddingDate') as HTMLInputElement)?.value || '',
+            "Local do evento": (document.getElementById('location') as HTMLInputElement)?.value.trim() || '',
+            "Número de convidados": parseInt((document.getElementById('guests') as HTMLInputElement)?.value) || 0,
+            "Email": (document.getElementById('email') as HTMLInputElement)?.value.trim() || '',
+            "Telefone": (document.getElementById('phone') as HTMLInputElement)?.value.trim() || '',
+            "Mensagem": (document.getElementById('message') as HTMLTextAreaElement)?.value.trim() || ''
+        };
+    }
+    
+    function submitToBaserow(data: Record<string, string | number>) {
+        showLoadingIndicator();
+
+        const apiToken = 'es4OIHz6dV93cJiImNVLg15rC57rjwHq';
+
+        fetch('https://api.baserow.io/api/database/rows/table/258308/?user_field_names=true', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Token ${apiToken}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(errorData => {
+                    throw new Error(`Erro na API: ${JSON.stringify(errorData)}`);
+                });
+            }
+            return response.json();
+        })
+        .then(() => {
+            showSuccessMessage();
+        })
+        .catch((error: Error) => {
+            showErrorMessage(error.message);
+        });
+    }
+    
+    function showLoadingIndicator() {
+        // Oculta header e descrição
+        if (modalHeader) (modalHeader as HTMLElement).style.display = 'none';
+        if (modalDescription) (modalDescription as HTMLElement).style.display = 'none';
+
+        // Oculta elementos do formulário
+        const formElements = contactForm?.querySelectorAll('input, textarea, select, button, label, .form-group');
+        formElements?.forEach(element => {
+            (element as HTMLElement).style.display = 'none';
+        });
+
+        const loadingIndicator = document.createElement('div');
+        loadingIndicator.className = 'loading-indicator active';
+        loadingIndicator.innerHTML = `
+            <div class="spinner"></div>
+            <p style="color: #666; font-size: 16px;">Enviando sua mensagem...</p>
+        `;
+
+        if (contactForm) {
+            contactForm.appendChild(loadingIndicator);
+        }
+    }
+    
+    function markAsError(element: HTMLInputElement | HTMLTextAreaElement, message: string) {
+        element.classList.add('error');
+
+        let errorMessage = element.nextElementSibling;
+        if (!errorMessage || !errorMessage.classList.contains('error-message')) {
+            errorMessage = document.createElement('div');
+            errorMessage.className = 'error-message';
+            element.parentNode?.insertBefore(errorMessage, element.nextSibling);
+        }
+
+        errorMessage.textContent = message;
+        errorMessage.classList.add('active');
+    }
+
+    function removeError(element: HTMLInputElement | HTMLTextAreaElement) {
+        element.classList.remove('error');
+
+        const errorMessage = element.nextElementSibling;
+        if (errorMessage && errorMessage.classList.contains('error-message')) {
+            errorMessage.classList.remove('active');
+        }
+    }
+    
+    function showSuccessMessage() {
+        const loadingIndicator = contactForm?.querySelector('.loading-indicator');
+        if (loadingIndicator) {
+            loadingIndicator.remove();
+        }
+
+        // Oculta header e descrição
+        if (modalHeader) (modalHeader as HTMLElement).style.display = 'none';
+        if (modalDescription) (modalDescription as HTMLElement).style.display = 'none';
+
+        const successMessage = document.createElement('div');
+        successMessage.className = 'form-success active';
+        successMessage.innerHTML = `
+            <div class="success-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h3 class="success-title">Mensagem Enviada!</h3>
+            <p class="success-message">Obrigado pelo seu contato. Retornaremos em breve para confirmar os detalhes do seu evento.</p>
+            <button class="success-close-button" id="closeSuccessButton">Fechar</button>
+        `;
+
+        contactForm?.appendChild(successMessage);
+
+        const closeSuccessButton = document.getElementById('closeSuccessButton');
+        closeSuccessButton?.addEventListener('click', function() {
+            closeModalFunc();
+        });
+
+        // Fecha automaticamente após 2 segundos
+        setTimeout(() => {
+            closeModalFunc();
+        }, 2000);
+    }
+
+    function showErrorMessage(errorText: string) {
+        const loadingIndicator = contactForm?.querySelector('.loading-indicator');
+        if (loadingIndicator) {
+            loadingIndicator.remove();
+        }
+
+        // Oculta header e descrição
+        if (modalHeader) (modalHeader as HTMLElement).style.display = 'none';
+        if (modalDescription) (modalDescription as HTMLElement).style.display = 'none';
+
+        const errorMessage = document.createElement('div');
+        errorMessage.className = 'form-error active';
+        errorMessage.innerHTML = `
+            <div class="error-icon">
+                <i class="fas fa-exclamation-circle"></i>
+            </div>
+            <h3 class="error-title">Erro ao Enviar</h3>
+            <p class="form-error-message">Não foi possível enviar sua mensagem. Por favor, tente novamente mais tarde.</p>
+            <p class="error-details">${errorText}</p>
+            <button class="error-close-button" id="closeErrorButton">Tentar Novamente</button>
+        `;
+
+        contactForm?.appendChild(errorMessage);
+
+        const closeErrorButton = document.getElementById('closeErrorButton');
+        closeErrorButton?.addEventListener('click', function() {
+            errorMessage.remove();
+
+            // Restaura o header e descrição
+            if (modalHeader) (modalHeader as HTMLElement).style.display = 'flex';
+            if (modalDescription) (modalDescription as HTMLElement).style.display = 'block';
+
+            // Restaura os elementos do formulário
+            const formElements = contactForm?.querySelectorAll('input, textarea, select, button, label, .form-group');
+            formElements?.forEach(element => {
+                (element as HTMLElement).style.display = '';
+            });
+        });
+    }
+    
+    const phoneInput = document.getElementById('phone') as HTMLInputElement | null;
+    if (phoneInput) {
+        phoneInput.addEventListener('input', function(e) {
+            const target = e.target as HTMLInputElement;
+            let value = target.value.replace(/\D/g, '');
+            if (value.length > 0) {
+                if (value.length <= 2) {
+                    value = `(${value}`;
+                } else if (value.length <= 7) {
+                    value = `(${value.substring(0, 2)}) ${value.substring(2)}`;
+                } else if (value.length <= 11) {
+                    value = `(${value.substring(0, 2)}) ${value.substring(2, 7)}-${value.substring(7)}`;
+                } else {
+                    value = `(${value.substring(0, 2)}) ${value.substring(2, 7)}-${value.substring(7, 11)}`;
+                }
+            }
+            target.value = value;
+        });
+    }
+});
+</script>

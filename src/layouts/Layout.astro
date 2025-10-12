@@ -1,0 +1,175 @@
+---
+interface Props {
+  title: string;
+  description: string;
+}
+
+const { title, description } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="pt-BR" style="scroll-behavior: smooth;">
+<head>
+    <!-- Meta Tags Básicos -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    
+    <!-- TITLE OTIMIZADO -->
+    <title>{title}</title>
+    
+    <!-- META DESCRIPTION OTIMIZADA -->
+    <meta name="description" content={description}>
+    
+    <!-- KEYWORDS -->
+    <meta name="keywords" content="músicos para casamento rio de janeiro, quarteto de cordas rj, orquestra casamento, violino casamento, música cerimônia, músicos eventos, violoncelo casamento rj, música clássica casamento">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://riocordas.com.br/">
+    <meta property="og:title" content={title}>
+    <meta property="og:description" content={description}>
+    <meta property="og:image" content="https://riocordas.com.br/imgs/moabe-hugo.jpg">
+    
+    <!-- Twitter Card -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://riocordas.com.br/">
+    <meta property="twitter:title" content={title}>
+    <meta property="twitter:description" content={description}>
+    <meta property="twitter:image" content="https://riocordas.com.br/imgs/moabe-hugo.jpg">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://riocordas.com.br/">
+    
+    <!-- Geo Tags (SEO Local) -->
+    <meta name="geo.region" content="BR-RJ">
+    <meta name="geo.placename" content="Rio de Janeiro">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Preconnect para Performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://img.youtube.com">
+    
+    <!-- Schema.org - Dados Estruturados -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "MusicGroup",
+      "name": "Grupo Rio Cordas",
+      "url": "https://riocordas.com.br",
+      "logo": "https://riocordas.com.br/imgs/logo-site-trans-big.png",
+      "image": "https://riocordas.com.br/imgs/moabe-hugo.jpg",
+      "description": "Músicos profissionais para casamentos e eventos no Rio de Janeiro desde 2011",
+      "foundingDate": "2011",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Rio de Janeiro",
+        "addressRegion": "RJ",
+        "addressCountry": "BR"
+      },
+      "sameAs": [
+        "https://www.facebook.com/riocordas",
+        "https://www.instagram.com/riocordas",
+        "https://www.youtube.com/@riocordas"
+      ],
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "5.0",
+        "reviewCount": "850",
+        "bestRating": "5"
+      },
+      "priceRange": "$$",
+      "genre": ["Classical", "Jazz", "MPB", "Bossa Nova"],
+      "areaServed": {
+        "@type": "City",
+        "name": "Rio de Janeiro"
+      }
+    }
+    </script>
+    
+    <!-- Local Business Schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "LocalBusiness",
+      "name": "Rio Cordas - Músicos para Casamento",
+      "image": "https://riocordas.com.br/imgs/logo-site-trans-big.png",
+      "telephone": "+55-21-97552-5707",
+      "email": "contato@riocordas.com.br",
+      "url": "https://riocordas.com.br",
+      "priceRange": "$$",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Rio de Janeiro",
+        "addressRegion": "RJ",
+        "postalCode": "22030-001",
+        "addressCountry": "BR"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": -22.9671751,
+        "longitude": -43.1883767
+      },
+      "openingHoursSpecification": {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+        "opens": "09:00",
+        "closes": "18:00"
+      }
+    }
+    </script>
+</head>
+<body>
+    <slot />
+</body>
+</html>
+
+<style is:global>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600&display=swap');
+
+:root {
+    --accent-color: #f23c00;
+    --black: #000000;
+    --white: #ffffff;
+    --light-gray: #f8f8f8;
+    --header-height: 80px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Montserrat', sans-serif;
+    background-color: var(--white);
+    color: var(--black);
+    line-height: 1.6;
+}
+
+button, .button, input[type="submit"], input[type="button"] {
+    font-family: 'Montserrat', sans-serif;
+    background-color: var(--accent-color);
+    color: var(--white);
+    border: 1px solid var(--accent-color);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+button:hover, .button:hover, input[type="submit"]:hover, input[type="button"]:hover {
+    background-color: #d93600;
+    border-color: #d93600;
+}
+
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+section {
+    scroll-margin-top: calc(var(--header-height) + 50px);
+}
+</style>

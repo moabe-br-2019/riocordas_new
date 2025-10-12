@@ -1,0 +1,243 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import WhatsAppButton from '../../components/WhatsAppButton.astro';
+import ContactModal from '../../components/ContactModal.astro';
+
+const blogPosts = (await getCollection('blog'))
+  .filter(post => !post.data.draft)
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+function formatDate(date: Date) {
+  return new Date(date).toLocaleDateString('pt-BR', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+}
+---
+
+<Layout 
+    title="Blog - Grupo Rio Cordas | Dicas sobre Música para Casamentos"
+    description="Confira dicas, tendências e novidades sobre música para casamentos. Artigos escritos por músicos profissionais."
+>
+    <Header />
+    
+    <main class="blog-page">
+        <section class="blog-hero">
+            <div class="container">
+                <h1>Blog Rio Cordas</h1>
+                <p>Dicas, tendências e novidades sobre música para casamentos</p>
+            </div>
+        </section>
+
+        <section class="blog-list">
+            <div class="container">
+                <div class="posts-grid">
+                    {blogPosts.map(post => (
+                        <article class="post-card">
+                            {post.data.image && (
+                                <a href={`/blog/${post.slug}/`} class="post-image">
+                                    <img src={post.data.image} alt={post.data.title} loading="lazy" />
+                                </a>
+                            )}
+                            <div class="post-content">
+                                <div class="post-meta">
+                                    <span class="post-date">{formatDate(post.data.pubDate)}</span>
+                                    <span class="post-author">Por {post.data.author}</span>
+                                </div>
+                                <h2 class="post-title">
+                                    <a href={`/blog/${post.slug}/`}>{post.data.title}</a>
+                                </h2>
+                                <p class="post-description">{post.data.description}</p>
+                                <div class="post-tags">
+                                    {post.data.tags.map(tag => (
+                                        <span class="tag">{tag}</span>
+                                    ))}
+                                </div>
+                                <a href={`/blog/${post.slug}/`} class="read-more">
+                                    Ler mais →
+                                </a>
+                            </div>
+                        </article>
+                    ))}
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <Footer />
+    <ContactModal />
+    <WhatsAppButton />
+</Layout>
+
+<style>
+.blog-page {
+    padding-top: 80px;
+}
+
+.blog-hero {
+    background: linear-gradient(135deg, #f23c00 0%, #d93600 100%);
+    color: white;
+    padding: 80px 0;
+    text-align: center;
+}
+
+.blog-hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 48px;
+    font-weight: 700;
+    margin-bottom: 20px;
+}
+
+.blog-hero p {
+    font-size: 20px;
+    opacity: 0.95;
+}
+
+.blog-list {
+    padding: 80px 0;
+    background-color: #f8f8f8;
+}
+
+.posts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 40px;
+}
+
+.post-card {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.post-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+}
+
+.post-image {
+    display: block;
+    overflow: hidden;
+    aspect-ratio: 16 / 9;
+}
+
+.post-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.post-card:hover .post-image img {
+    transform: scale(1.05);
+}
+
+.post-content {
+    padding: 30px;
+}
+
+.post-meta {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 15px;
+    font-size: 13px;
+    color: #666;
+}
+
+.post-date {
+    font-weight: 500;
+}
+
+.post-author {
+    color: var(--accent-color);
+}
+
+.post-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 15px;
+    line-height: 1.3;
+}
+
+.post-title a {
+    color: var(--black);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.post-title a:hover {
+    color: var(--accent-color);
+}
+
+.post-description {
+    color: #555;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.post-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.tag {
+    background: #f0f0f0;
+    color: #666;
+    padding: 5px 12px;
+    border-radius: 15px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.read-more {
+    display: inline-block;
+    color: var(--accent-color);
+    font-weight: 600;
+    text-decoration: none;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: transform 0.3s ease;
+}
+
+.read-more:hover {
+    transform: translateX(5px);
+}
+
+@media (max-width: 768px) {
+    .blog-hero h1 {
+        font-size: 36px;
+    }
+    
+    .blog-hero p {
+        font-size: 16px;
+    }
+    
+    .posts-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .blog-hero {
+        padding: 60px 0;
+    }
+    
+    .blog-hero h1 {
+        font-size: 28px;
+    }
+    
+    .blog-list {
+        padding: 60px 0;
+    }
+}
+</style>
