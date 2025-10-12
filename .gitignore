@@ -48,3 +48,5 @@ coverage/
 *.md
 !README.md
 *.sh
+*.bat
+*.txt
