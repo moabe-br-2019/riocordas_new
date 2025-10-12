@@ -43,3 +43,8 @@ coverage/
 # Outros
 .vercel
 .netlify
+
+# Arquivos de documentação e scripts (exceto README.md)
+*.md
+!README.md
+*.sh
