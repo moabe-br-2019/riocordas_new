@@ -44,12 +44,19 @@ const { title, description } = Astro.props;
     <meta name="geo.region" content="BR-RJ">
     <meta name="geo.placename" content="Rio de Janeiro">
     
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    
-    <!-- Preconnect para Performance -->
+    <!-- Preconnect para Performance (ANTES de carregar recursos) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
     <link rel="preconnect" href="https://img.youtube.com">
+
+    <!-- Google Fonts com font-display=swap para performance -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600&display=swap"></noscript>
+
+    <!-- Font Awesome - Carregamento diferido -->
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"></noscript>
     
     <!-- Schema.org - Dados Estruturados -->
     <script type="application/ld+json">
@@ -126,7 +133,7 @@ const { title, description } = Astro.props;
 </html>
 
 <style is:global>
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600&display=swap');
+/* Fontes já carregadas no <head> com preload para melhor performance */
 
 :root {
     --accent-color: #f23c00;
