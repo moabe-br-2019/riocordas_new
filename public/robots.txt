@@ -1,0 +1,12 @@
+# robots.txt para riocordas.com.br
+
+# Permitir todos os crawlers
+User-agent: *
+Allow: /
+
+# Páginas importantes para priorizar
+Allow: /blog/
+Allow: /imgs/
+
+# Sitemap
+Sitemap: https://riocordas.com.br/sitemap-index.xml
