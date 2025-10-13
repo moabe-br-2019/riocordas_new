@@ -45,9 +45,10 @@ coverage/
 .vercel
 .netlify
 
-# Arquivos de documentação e scripts (exceto README.md)
+# Arquivos de documentação e scripts (exceto README.md e posts do blog)
 *.md
 !README.md
+!src/content/**/*.md
 *.sh
 *.bat
 *.txt
