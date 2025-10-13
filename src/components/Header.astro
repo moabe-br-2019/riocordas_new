@@ -131,7 +131,7 @@ nav a img:hover {
         display: flex;
         z-index: 1000;
     }
-    
+
     .nav-links {
         display: flex;
         position: absolute;
@@ -149,7 +149,7 @@ nav a img:hover {
         transition: all 0.3s ease;
         z-index: 999;
     }
-    
+
     .nav-links.active {
         transform: translateY(0);
         opacity: 1;
@@ -158,3 +158,70 @@ nav a img:hover {
     }
 }
 </style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+    const navLinks = document.querySelector('.nav-links');
+    const header = document.querySelector('header');
+
+    if (!header) return;
+
+    const headerHeight = header.offsetHeight;
+    const offset = 50;
+
+    if (mobileMenuToggle && navLinks) {
+        // Toggle do menu mobile
+        mobileMenuToggle.addEventListener('click', function() {
+            navLinks.classList.toggle('active');
+            this.classList.toggle('active');
+        });
+
+        // Smooth scroll para links internos (apenas na home)
+        const allNavLinks = document.querySelectorAll('a[href^="#"]:not(.cta-button):not(.hero-cta)');
+        allNavLinks.forEach(link => {
+            link.addEventListener('click', function(this: HTMLElement, e) {
+                e.preventDefault();
+
+                const targetId = this.getAttribute('href');
+
+                if (targetId && targetId !== '#') {
+                    const targetSection = document.querySelector(targetId);
+
+                    if (targetSection) {
+                        const targetPosition = targetSection.getBoundingClientRect().top + window.scrollY - headerHeight - offset;
+
+                        window.scrollTo({
+                            top: targetPosition,
+                            behavior: 'smooth'
+                        });
+
+                        // Fecha o menu mobile após clicar em um link
+                        if (window.innerWidth <= 768) {
+                            navLinks.classList.remove('active');
+                            mobileMenuToggle.classList.remove('active');
+                        }
+                    }
+                }
+            });
+        });
+
+        // Fecha o menu ao redimensionar para desktop
+        window.addEventListener('resize', function() {
+            if (window.innerWidth > 768) {
+                navLinks.classList.remove('active');
+                mobileMenuToggle.classList.remove('active');
+            }
+        });
+
+        // Fecha o menu ao clicar fora dele
+        document.addEventListener('click', function(e) {
+            const target = e.target as HTMLElement;
+            if (!target.closest('nav') && navLinks.classList.contains('active')) {
+                navLinks.classList.remove('active');
+                mobileMenuToggle.classList.remove('active');
+            }
+        });
+    }
+});
+</script>
