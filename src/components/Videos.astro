@@ -43,7 +43,14 @@ const videos = [
             {videos.map(video => (
                 <div class="video-card" data-video-id={video.id}>
                     <div class="video-thumbnail">
-                        <img src={`https://img.youtube.com/vi/${video.id}/maxresdefault.jpg`} alt={video.alt} loading="lazy">
+                        <img
+                            src={`https://img.youtube.com/vi/${video.id}/maxresdefault.jpg`}
+                            alt={video.alt}
+                            loading="lazy"
+                            decoding="async"
+                            width="1280"
+                            height="720"
+                        >
                         <div class="play-button">
                             <i class="fas fa-play"></i>
                         </div>
@@ -257,14 +264,14 @@ const videos = [
 document.addEventListener('DOMContentLoaded', function() {
     const videoCards = document.querySelectorAll('.video-card');
     const lightbox = document.getElementById('videoLightbox');
-    const videoFrame = document.getElementById('videoFrame') as HTMLIFrameElement | null;
+    const videoFrame = document.getElementById('videoFrame');
     const closeLightbox = document.querySelector('.close-lightbox');
 
     if (!lightbox || !videoFrame || !closeLightbox) {
         return;
     }
 
-    function openLightbox(videoId: string) {
+    function openLightbox(videoId) {
         if (videoFrame && lightbox) {
             videoFrame.src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
             lightbox.classList.add('active');
@@ -281,7 +288,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     videoCards.forEach(card => {
-        card.addEventListener('click', function(this: HTMLElement) {
+        card.addEventListener('click', function() {
             const videoId = this.getAttribute('data-video-id');
             if (videoId) {
                 openLightbox(videoId);

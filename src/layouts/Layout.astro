@@ -44,14 +44,17 @@ const { title, description } = Astro.props;
     <meta name="geo.region" content="BR-RJ">
     <meta name="geo.placename" content="Rio de Janeiro">
 
-    <!-- Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SHQ8RCDLT4"></script>
+    <!-- Google Analytics - carregamento diferido -->
+    <script async defer src="https://www.googletagmanager.com/gtag/js?id=G-SHQ8RCDLT4"></script>
     <script is:inline>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
       gtag('config', 'G-SHQ8RCDLT4');
     </script>
+
+    <!-- Preload da imagem LCP (Largest Contentful Paint) -->
+    <link rel="preload" as="image" href="/imgs/piano.jpg" fetchpriority="high">
 
     <!-- Preconnect para Performance (ANTES de carregar recursos) -->
     <link rel="preconnect" href="https://www.googletagmanager.com">
@@ -142,9 +145,8 @@ const { title, description } = Astro.props;
 </body>
 </html>
 
-<style is:global>
-/* Fontes já carregadas no <head> com preload para melhor performance */
-
+<style is:global is:inline>
+/* CSS Crítico - Inline para melhor performance */
 :root {
     --accent-color: #f23c00;
     --black: #000000;

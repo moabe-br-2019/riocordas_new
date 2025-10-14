@@ -31,7 +31,17 @@ const testimonials = [
                     </div>
                     <p class="testimonial-content" itemprop="reviewBody">{testimonial.content}</p>
                     <div class="testimonial-author" itemprop="author" itemscope itemtype="https://schema.org/Person">
-                        <div class="author-image" style={`background-image: url('${testimonial.image}');`}></div>
+                        <div class="author-image-wrapper">
+                            <img
+                                src={testimonial.image}
+                                alt={`Foto de ${testimonial.author}`}
+                                class="author-image"
+                                width="60"
+                                height="60"
+                                loading="lazy"
+                                decoding="async"
+                            />
+                        </div>
                         <div class="author-details">
                             <h4 itemprop="name">{testimonial.author}</h4>
                             <p>{testimonial.role}</p>
@@ -110,19 +120,25 @@ const testimonials = [
     align-items: center;
 }
 
-.author-image {
+.author-image-wrapper {
     width: 60px;
     height: 60px;
     border-radius: 50%;
     margin-right: 20px;
-    background-size: cover;
-    background-position: center;
     border: 2px solid var(--accent-color);
-    transition: transform 0.3s ease;
     overflow: hidden;
+    transition: transform 0.3s ease;
 }
 
-.testimonial-card:hover .author-image {
+.author-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+}
+
+.testimonial-card:hover .author-image-wrapper {
     transform: scale(1.1);
 }
 

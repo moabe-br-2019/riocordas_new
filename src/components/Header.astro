@@ -12,7 +12,13 @@ const isHomePage = currentPath === '/';
                 <span></span>
             </div>
             <a href="/">
-                <img src="/imgs/logo-site-trans-big.png" alt="Músicos para Casamento Rio de Janeiro - Grupo Rio Cordas" width="150" height="auto">
+                <img
+                    src="/imgs/logo-site-trans-big.png"
+                    alt="Músicos para Casamento Rio de Janeiro - Grupo Rio Cordas"
+                    width="150"
+                    height="75"
+                    decoding="async"
+                >
             </a>
             <div class="nav-links">
                 <a href={isHomePage ? "#home" : "/#home"}>Home</a>
@@ -102,6 +108,27 @@ nav a img:hover {
     cursor: pointer;
 }
 
+/* Breakpoints para telas médias (768px - 1200px) */
+@media (min-width: 769px) and (max-width: 1200px) {
+    .nav-links {
+        gap: 20px;
+    }
+
+    .nav-links a {
+        font-size: 12px;
+    }
+
+    .cta-button {
+        padding: 8px 20px;
+        font-size: 12px;
+    }
+
+    nav a img {
+        width: 120px;
+        height: auto;
+    }
+}
+
 .mobile-menu-toggle span {
     display: block;
     height: 3px;
@@ -180,7 +207,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Smooth scroll para links internos (apenas na home)
         const allNavLinks = document.querySelectorAll('a[href^="#"]:not(.cta-button):not(.hero-cta)');
         allNavLinks.forEach(link => {
-            link.addEventListener('click', function(this: HTMLElement, e) {
+            link.addEventListener('click', function(e) {
                 e.preventDefault();
 
                 const targetId = this.getAttribute('href');
@@ -216,10 +243,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Fecha o menu ao clicar fora dele
         document.addEventListener('click', function(e) {
-            const target = e.target as HTMLElement;
-            if (!target.closest('nav') && navLinks.classList.contains('active')) {
-                navLinks.classList.remove('active');
-                mobileMenuToggle.classList.remove('active');
+            if (e.target && e.target instanceof HTMLElement) {
+                if (!e.target.closest('nav') && navLinks.classList.contains('active')) {
+                    navLinks.classList.remove('active');
+                    mobileMenuToggle.classList.remove('active');
+                }
             }
         });
     }

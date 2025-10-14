@@ -28,9 +28,19 @@ const services = [
             <h2 class="section-title">Música ao Vivo Personalizada para Cada Momento</h2>
         </div>
         <div class="services-grid">
-            {services.map(service => (
+            {services.map((service) => (
                 <article class="service-card">
-                    <div class="service-icon" style={`background-image: url('${service.image}');`} role="img" aria-label={service.alt}></div>
+                    <div class="service-icon-wrapper">
+                        <img
+                            src={service.image}
+                            alt={service.alt}
+                            class="service-icon"
+                            width="80"
+                            height="80"
+                            loading="lazy"
+                            decoding="async"
+                        />
+                    </div>
                     <h3 class="service-title">{service.title}</h3>
                     <p class="service-description">{service.description}</p>
                     <a href="#contact" class="service-link" aria-label={`Solicitar orçamento para ${service.title.toLowerCase()}`}>Solicitar Orçamento</a>
@@ -98,18 +108,24 @@ const services = [
     transform: translateY(-10px);
 }
 
-.service-icon {
+.service-icon-wrapper {
     width: 80px;
     height: 80px;
     border-radius: 50%;
     margin: 0 auto 30px;
-    background-size: cover;
-    background-position: center;
-    transition: transform 0.3s ease;
     overflow: hidden;
+    transition: transform 0.3s ease;
 }
 
-.service-card:hover .service-icon {
+.service-icon {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+}
+
+.service-card:hover .service-icon-wrapper {
     transform: scale(1.1);
 }
 
