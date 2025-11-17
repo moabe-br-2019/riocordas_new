@@ -82,6 +82,5 @@ npm run dev
 ## 📝 Notas
 
 - As imagens precisam ser copiadas manualmente da pasta `imgs` do projeto original
-- O token da API Baserow está incluído no componente ContactModal.astro
 - Cores principais: Laranja (#f23c00), Preto (#000000), Branco (#ffffff)
 - Fontes: Playfair Display (títulos) e Montserrat (corpo)

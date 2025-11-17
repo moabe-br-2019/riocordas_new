@@ -45,10 +45,13 @@ coverage/
 .vercel
 .netlify
 
-# Arquivos de documentação e scripts (exceto README.md e posts do blog)
-*.md
-!README.md
-!src/content/**/*.md
+# Pasta de documentação
+docs/
+
+# Scripts e arquivos temporários
 *.sh
 *.bat
 *.txt
+
+# Claude Code
+.claude/
