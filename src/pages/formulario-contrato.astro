@@ -1144,10 +1144,11 @@ function showStep(step) {
         const submitBtn = document.getElementById('submitBtn');
 
         // Mostrar botão voltar: só a partir da etapa 1 (Dados do Contratante)
-        prevBtn.style.display = step >= 1 ? 'block' : 'none';
+        const stepNum = typeof step === 'string' ? parseInt(step.split('-')[0]) : step;
+        prevBtn.style.display = stepNum >= 1 ? 'block' : 'none';
 
         submitBtn.style.display = step === totalSteps - 1 ? 'block' : 'none';
-        nextBtn.style.display = step < totalSteps - 1 ? 'block' : 'none';
+        nextBtn.style.display = !(typeof step === 'string' || step >= totalSteps - 1) ? 'block' : 'none';
 
         // Scroll ao topo
         document.querySelector('.contract-form')?.scrollIntoView({ behavior: 'smooth' });
@@ -1156,7 +1157,29 @@ function showStep(step) {
 
 function goToNextStep() {
     if (validateStep(currentStep)) {
-        currentStep++;
+        // Lógica especial para navegação das etapas 3.x
+        if (currentStep === 3) {
+            // Após escolher formação, ir para instrumentos (3-1)
+            showStep('3-1');
+            updateProgressBar();
+            return;
+        } else if (currentStep === '3-1') {
+            // Após instrumentos, ir para trompetes (3-2)
+            showStep('3-2');
+            updateProgressBar();
+            return;
+        } else if (currentStep === '3-2') {
+            // Após trompetes, ir para sonorização (3-3)
+            showStep('3-3');
+            updateProgressBar();
+            return;
+        } else if (currentStep === '3-3') {
+            // Após sonorização, ir para termos (step 4)
+            currentStep = 4;
+        } else {
+            currentStep++;
+        }
+
         if (currentStep === 1) {
             updateEmailDisplay();
         }
@@ -1166,19 +1189,33 @@ function goToNextStep() {
 }
 
 function goToPreviousStep() {
-    if (currentStep > 0) {
+    // Lógica especial para voltar das etapas 3.x
+    if (currentStep === '3-1') {
+        showStep(3);
+    } else if (currentStep === '3-2') {
+        showStep('3-1');
+    } else if (currentStep === '3-3') {
+        showStep('3-2');
+    } else if (currentStep > 0) {
         currentStep--;
         showStep(currentStep);
-        updateProgressBar();
+    } else {
+        return;
     }
+    updateProgressBar();
 }
 
 function updateProgressBar() {
-    const percentage = ((currentStep + 1) / totalSteps) * 100;
+    let stepNumber = currentStep;
+    if (currentStep === '3-1') stepNumber = 4;
+    else if (currentStep === '3-2') stepNumber = 5;
+    else if (currentStep === '3-3') stepNumber = 6;
+
+    const percentage = ((stepNumber + 1) / totalSteps) * 100;
     const progressFill = document.getElementById('progressFill');
     progressFill.style.width = percentage + '%';
 
-    document.getElementById('currentStep').textContent = currentStep + 1;
+    document.getElementById('currentStep').textContent = stepNumber + 1;
 }
 
 function validateStep(step) {
@@ -1280,6 +1317,24 @@ function validateStep(step) {
         const formation = (document.querySelector('input[name="formation"]:checked') as HTMLInputElement);
         if (!formation) {
             showError('formationError', 'Por favor, escolha uma formação.');
+            isValid = false;
+        }
+    } else if (step === '3-1') {
+        const instruments = (document.querySelector('input[name="instruments"]:checked') as HTMLInputElement);
+        if (!instruments) {
+            showError('instrumentsError', 'Por favor, escolha uma combinação de instrumentos.');
+            isValid = false;
+        }
+    } else if (step === '3-2') {
+        const trumpet = (document.querySelector('input[name="trumpet"]:checked') as HTMLInputElement);
+        if (!trumpet) {
+            showError('trumpetError', 'Por favor, escolha uma opção de trompete.');
+            isValid = false;
+        }
+    } else if (step === '3-3') {
+        const sound = (document.querySelector('input[name="sound"]:checked') as HTMLInputElement);
+        if (!sound) {
+            showError('soundError', 'Por favor, escolha uma opção de sonorização.');
             isValid = false;
         }
     } else if (step === 4) {
