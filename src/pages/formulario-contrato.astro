@@ -129,14 +129,15 @@ import Footer from '../components/Footer.astro';
                         <div class="form-group">
                             <label for="guestArrivalTime">Horário de Chegada dos Convidados*</label>
                             <input type="time" id="guestArrivalTime" name="guestArrivalTime" required aria-required="true">
-                            <div class="error-message"></div>
+                            <p class="field-hint">Máximo de 1 hora de intervalo até o início da cerimônia</p>
+                            <div class="error-message" id="guestArrivalTimeError"></div>
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
                             <label for="ceremonyStartTime">Horário de Início da Cerimônia*</label>
                             <input type="time" id="ceremonyStartTime" name="ceremonyStartTime" required aria-required="true">
-                            <div class="error-message"></div>
+                            <div class="error-message" id="ceremonyStartTimeError"></div>
                         </div>
                         <div class="form-group">
                             <label for="guestCount">Número de Convidados*</label>
@@ -851,6 +852,15 @@ CLÁUSULAS GERAIS:
     flex-direction: column;
 }
 
+.btn-action.btn-icon i {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    line-height: 1;
+}
+
 .btn-action-wrapper {
     display: flex;
     flex-direction: column;
@@ -1132,9 +1142,8 @@ function showStep(step) {
         const nextBtn = document.getElementById('nextBtn');
         const submitBtn = document.getElementById('submitBtn');
 
-        // Mostrar botão voltar: sim nas etapas 0, 3, 3-1, 3-2, 3-3, 4, 5, 6 (não na 1 e 2)
-        const stepsWithBack = [0, '3', '3-1', '3-2', '3-3', 4, 5, 6];
-        prevBtn.style.display = stepsWithBack.includes(step) && step > 0 ? 'block' : 'none';
+        // Mostrar botão voltar: só a partir da etapa 4 (Termos e Condições)
+        prevBtn.style.display = step >= 4 ? 'block' : 'none';
 
         submitBtn.style.display = step === totalSteps - 1 ? 'block' : 'none';
         nextBtn.style.display = step < totalSteps - 1 ? 'block' : 'none';
@@ -1239,10 +1248,33 @@ function validateStep(step) {
         const venueAddress = (document.getElementById('venueAddress') as HTMLInputElement).value;
         const eventDate = (document.getElementById('eventDate') as HTMLInputElement).value;
         const guestCount = (document.getElementById('guestCount') as HTMLInputElement).value;
+        const guestArrivalTime = (document.getElementById('guestArrivalTime') as HTMLInputElement).value;
+        const ceremonyStartTime = (document.getElementById('ceremonyStartTime') as HTMLInputElement).value;
 
         if (!venueAddress) isValid = false;
         if (!eventDate) isValid = false;
         if (!guestCount) isValid = false;
+
+        if (guestArrivalTime && ceremonyStartTime) {
+            const [arrivalHours, arrivalMinutes] = guestArrivalTime.split(':').map(Number);
+            const [ceremonyHours, ceremonyMinutes] = ceremonyStartTime.split(':').map(Number);
+
+            const arrivalTotalMinutes = arrivalHours * 60 + arrivalMinutes;
+            const ceremonyTotalMinutes = ceremonyHours * 60 + ceremonyMinutes;
+
+            const diffMinutes = ceremonyTotalMinutes - arrivalTotalMinutes;
+
+            if (diffMinutes < 0) {
+                showError('ceremonyStartTimeError', 'O horário de início da cerimônia deve ser após o horário de chegada dos convidados.');
+                isValid = false;
+            } else if (diffMinutes > 60) {
+                showError('guestArrivalTimeError', 'Máximo de 1 hora entre a chegada dos convidados e o início da cerimônia.');
+                isValid = false;
+            } else {
+                clearError('guestArrivalTimeError');
+                clearError('ceremonyStartTimeError');
+            }
+        }
     } else if (step === 3) {
         const formation = (document.querySelector('input[name="formation"]:checked') as HTMLInputElement);
         if (!formation) {
