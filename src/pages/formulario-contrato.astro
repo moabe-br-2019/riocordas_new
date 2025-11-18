@@ -1011,7 +1011,7 @@ CLÁUSULAS GERAIS:
 
 <script>
 let currentStep = 0;
-const totalSteps = 7;
+const totalSteps = 10; // 0:Email, 1:Contractor, 2:Event, 3:Formation, 3-1:Instruments, 3-2:Trumpet, 3-3:Sound, 4:Terms, 5:Payment, 6:Observations
 
 const instrumentOptions = {
     dueto: [
@@ -1147,8 +1147,10 @@ function showStep(step) {
         const stepNum = typeof step === 'string' ? parseInt(step.split('-')[0]) : step;
         prevBtn.style.display = stepNum >= 1 ? 'block' : 'none';
 
-        submitBtn.style.display = step === totalSteps - 1 ? 'block' : 'none';
-        nextBtn.style.display = !(typeof step === 'string' || step >= totalSteps - 1) ? 'block' : 'none';
+        // Submit button appears on last step (step 6)
+        submitBtn.style.display = step === 6 ? 'block' : 'none';
+        // Next button appears on all steps except last (step 6)
+        nextBtn.style.display = step !== 6 ? 'block' : 'none';
 
         // Scroll ao topo
         document.querySelector('.contract-form')?.scrollIntoView({ behavior: 'smooth' });
@@ -1207,6 +1209,8 @@ function goToPreviousStep() {
 
 function updateProgressBar() {
     let stepNumber = currentStep;
+    // Map the steps to their position in the flow
+    // 0:Email(1), 1:Contractor(2), 2:Event(3), 3:Formation(4), 3-1:Instruments(5), 3-2:Trumpet(6), 3-3:Sound(7), 4:Terms(8), 5:Payment(9), 6:Observations(10)
     if (currentStep === '3-1') stepNumber = 4;
     else if (currentStep === '3-2') stepNumber = 5;
     else if (currentStep === '3-3') stepNumber = 6;
