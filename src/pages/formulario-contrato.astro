@@ -859,6 +859,13 @@ CLÁUSULAS GERAIS:
     width: 100%;
     height: 100%;
     line-height: 1;
+    font-size: 28px;
+}
+
+@media (max-width: 480px) {
+    .btn-action.btn-icon i {
+        font-size: 22px;
+    }
 }
 
 .btn-action-wrapper {
@@ -1142,8 +1149,8 @@ function showStep(step) {
         const nextBtn = document.getElementById('nextBtn');
         const submitBtn = document.getElementById('submitBtn');
 
-        // Mostrar botão voltar: só a partir da etapa 4 (Termos e Condições)
-        prevBtn.style.display = step >= 4 ? 'block' : 'none';
+        // Mostrar botão voltar: só a partir da etapa 3 (Formação Instrumental)
+        prevBtn.style.display = step >= 3 ? 'block' : 'none';
 
         submitBtn.style.display = step === totalSteps - 1 ? 'block' : 'none';
         nextBtn.style.display = step < totalSteps - 1 ? 'block' : 'none';
