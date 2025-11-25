@@ -1,7 +1,8 @@
 import type { APIRoute } from 'astro';
 
 interface Env {
-  BASEROW_API_TOKEN: string;
+  baserow_token: string;
+  BASEROW_API_TOKEN?: string;
 }
 
 interface PricingData {
@@ -18,12 +19,13 @@ export const GET: APIRoute = async ({ request, locals }) => {
 
     // Try to get from Cloudflare context (production)
     if (typeof locals !== 'undefined' && locals && 'runtime' in locals) {
-      apiToken = (locals.runtime.env as Env).BASEROW_API_TOKEN;
+      // Try both possible names for the token variable
+      apiToken = (locals.runtime.env as Env).baserow_token || (locals.runtime.env as Env).BASEROW_API_TOKEN || '';
     }
 
     // Fallback to process.env (development local)
     if (!apiToken) {
-      apiToken = process.env.BASEROW_API_TOKEN || '';
+      apiToken = process.env.baserow_token || process.env.BASEROW_API_TOKEN || '';
     }
 
     console.log('🔐 Token check: ', apiToken ? `Found (${apiToken.substring(0, 10)}...)` : 'Not found');
