@@ -4,6 +4,9 @@
 User-agent: *
 Allow: /
 
+# Bloquear página de valores (não deve ser indexada)
+Disallow: /valores/
+
 # Páginas importantes para priorizar
 Allow: /blog/
 Allow: /imgs/

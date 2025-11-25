@@ -1,0 +1,452 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+interface PackageSample {
+  id: number;
+  name: string;
+  image: any;
+  [key: string]: any;
+}
+
+interface PricingItem {
+  id: number;
+  year: number;
+  dueto: string;
+  trio: string;
+  quarteto: string;
+  quinteto: string;
+  packageSample: PackageSample | null;
+  [key: string]: any;
+}
+
+interface ApiResponse {
+  success: boolean;
+  pricing: PricingItem[];
+  error?: string;
+  message?: string;
+}
+
+// Obter ano da URL ou usar o ano atual
+const url = new URL(Astro.request.url);
+const yearParam = url.searchParams.get('ano');
+const currentYear = new Date().getFullYear();
+const selectedYear = yearParam ? parseInt(yearParam) : currentYear;
+
+let pricingData: any[] = [];
+let allPricingData: any[] = [];
+let packageData: any = null;
+let error = '';
+let availableYears: number[] = [];
+
+try {
+  // Buscar dados da API (funciona tanto em dev quanto em produção)
+  const siteUrl = import.meta.env.SITE || 'https://riocordas.com.br';
+  const apiUrl = new URL('/api/valores', siteUrl).href;
+
+  console.log('📌 Fetching pricing data from:', apiUrl);
+  const apiResponse = await fetch(apiUrl);
+
+  if (!apiResponse.ok) {
+    const errorText = await apiResponse.text();
+    console.error('API error response:', errorText);
+    throw new Error(`API error: ${apiResponse.statusText} - ${errorText.substring(0, 200)}`);
+  }
+
+  const contentType = apiResponse.headers.get('content-type');
+  if (!contentType?.includes('application/json')) {
+    const bodyText = await apiResponse.text();
+    console.error('Invalid content-type:', contentType, 'Body:', bodyText.substring(0, 200));
+    throw new Error(`Invalid response format: expected JSON but got ${contentType}`);
+  }
+
+  const data: ApiResponse = await apiResponse.json();
+
+  if (data.success) {
+    allPricingData = data.pricing || [];
+    packageData = data.package || null;
+    console.log('✅ Data loaded successfully. Years available:', [...new Set(allPricingData.map((item: PricingData) => item.year))]);
+  } else {
+    error = data.message || data.error || 'Unknown error occurred';
+    console.error('API returned error:', error);
+  }
+} catch (err) {
+  error = err instanceof Error ? err.message : 'Erro ao carregar dados';
+  console.error('❌ Error fetching data:', error);
+}
+
+// Extrair anos disponíveis e filtrar pelos dados do ano selecionado
+if (allPricingData.length > 0) {
+  availableYears = [...new Set(allPricingData.map((item: PricingItem) => item.year))].sort((a, b) => a - b);
+  pricingData = allPricingData.filter((item: PricingItem) => item.year === selectedYear);
+
+  // Se não houver dados para o ano selecionado, usar o ano mais recente
+  if (pricingData.length === 0 && availableYears.length > 0) {
+    const latestYear = availableYears[availableYears.length - 1];
+    console.log(`ℹ️ No data for year ${selectedYear}, showing latest year ${latestYear}`);
+    pricingData = allPricingData.filter((item: PricingItem) => item.year === latestYear);
+  }
+}
+---
+
+<Layout
+  title="Valores - Rio Cordas"
+  description="Tabela de valores dos pacotes de contratação da Rio Cordas"
+>
+  <!-- Meta tags para bloquear indexação pelo Google -->
+  <meta name="robots" content="noindex, nofollow" slot="head">
+  <meta name="googlebot" content="noindex, nofollow" slot="head">
+
+  <div class="valores-container">
+    <div class="valores-header">
+      <h1>Tabela de Valores</h1>
+      <p class="subtitle">Conheça os valores e pacotes disponíveis para contratação</p>
+    </div>
+
+    {error && (
+      <div class="error-message">
+        <p>Erro ao carregar os dados: {error}</p>
+      </div>
+    )}
+
+    {availableYears.length > 0 && (
+      <div class="year-filter">
+        <p class="filter-label">Filtrar por Ano:</p>
+        <div class="year-buttons">
+          {availableYears.map((year) => (
+            <a
+              href={`/valores?ano=${year}`}
+              class={`year-btn ${selectedYear === year ? 'active' : ''}`}
+            >
+              {year}
+            </a>
+          ))}
+        </div>
+      </div>
+    )}
+
+    {!error && pricingData.length > 0 && (
+      <div class="pricing-section">
+        <h2>Valores - Ano {pricingData[0]?.year || selectedYear}</h2>
+        <div class="cards-grid">
+          {pricingData.map((pricingItem: PricingItem) => (
+            <div class="pricing-card">
+              {pricingItem.packageSample?.image && (
+                <div class="card-image">
+                  <img
+                    src={pricingItem.packageSample.image.url || pricingItem.packageSample.image}
+                    alt={pricingItem.packageSample.name || 'Pacote'}
+                  />
+                </div>
+              )}
+              <div class="card-header">
+                <h3>{pricingItem.packageSample?.name || 'Pacote'}</h3>
+              </div>
+              <div class="card-body">
+                <div class="formations-list">
+                  <div class="formation-item">
+                    <span class="formation-name">Dueto</span>
+                    <span class="formation-price">{pricingItem.dueto}</span>
+                  </div>
+                  <div class="formation-item">
+                    <span class="formation-name">Trio</span>
+                    <span class="formation-price">{pricingItem.trio}</span>
+                  </div>
+                  <div class="formation-item">
+                    <span class="formation-name">Quarteto</span>
+                    <span class="formation-price">{pricingItem.quarteto}</span>
+                  </div>
+                  <div class="formation-item">
+                    <span class="formation-name">Quinteto</span>
+                    <span class="formation-price">{pricingItem.quinteto}</span>
+                  </div>
+                </div>
+              </div>
+              <div class="card-footer">
+                <a href="/formulario-contrato" class="btn-contact">Contratar Agora</a>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    )}
+
+    {!error && pricingData.length === 0 && (
+      <div class="no-data-message">
+        <p>Nenhum dado disponível para o ano {selectedYear}</p>
+        {availableYears.length > 0 && (
+          <p class="suggestion">Tente outro ano: {availableYears.join(', ')}</p>
+        )}
+      </div>
+    )}
+  </div>
+</Layout>
+
+<style>
+  .valores-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 60px 20px;
+    background-color: #f9f9f9;
+    min-height: 80vh;
+  }
+
+  .valores-header {
+    text-align: center;
+    margin-bottom: 50px;
+  }
+
+  .valores-header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 36px;
+    color: #333;
+    margin-bottom: 10px;
+  }
+
+  .subtitle {
+    font-size: 16px;
+    color: #666;
+    margin: 0;
+  }
+
+  .year-filter {
+    background-color: white;
+    border-radius: 8px;
+    padding: 30px;
+    margin-bottom: 40px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+  }
+
+  .filter-label {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 15px;
+  }
+
+  .year-buttons {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .year-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 20px;
+    border-radius: 4px;
+    background-color: #f0f0f0;
+    color: #333;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+
+  .year-btn:hover {
+    background-color: #e0e0e0;
+    transform: translateY(-2px);
+  }
+
+  .year-btn.active {
+    background-color: var(--accent-color);
+    color: white;
+    border-color: var(--accent-color);
+  }
+
+  .pricing-section {
+    background-color: transparent;
+    padding: 0;
+    margin-bottom: 30px;
+    box-shadow: none;
+  }
+
+  .pricing-section h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    color: #333;
+    margin-bottom: 40px;
+    text-align: center;
+    border: none;
+    padding: 0;
+  }
+
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+  }
+
+  .pricing-card {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .pricing-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  }
+
+  .card-image {
+    width: 100%;
+    height: 250px;
+    overflow: hidden;
+    background-color: #f5f5f5;
+  }
+
+  .card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .card-header {
+    background: linear-gradient(135deg, var(--accent-color), #ff6b35);
+    color: white;
+    padding: 20px;
+    text-align: center;
+  }
+
+  .card-header h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    margin: 0;
+  }
+
+  .card-body {
+    padding: 25px 20px;
+    flex-grow: 1;
+  }
+
+  .formations-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .formation-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    background-color: #f9f9f9;
+    border-radius: 4px;
+    border-left: 3px solid var(--accent-color);
+  }
+
+  .formation-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+  }
+
+  .formation-price {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--accent-color);
+  }
+
+  .card-footer {
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-top: 1px solid #e0e0e0;
+  }
+
+  .btn-contact {
+    display: block;
+    width: 100%;
+    padding: 12px 20px;
+    background-color: var(--accent-color);
+    color: white;
+    text-decoration: none;
+    text-align: center;
+    font-weight: 600;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    font-size: 14px;
+  }
+
+  .btn-contact:hover {
+    background-color: #d93600;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(242, 60, 0, 0.3);
+  }
+
+  .error-message {
+    background-color: #ffe5e5;
+    border-left: 4px solid #ff3b30;
+    padding: 20px;
+    border-radius: 4px;
+    margin-bottom: 30px;
+    color: #c41c00;
+  }
+
+  .error-message p {
+    margin: 0;
+  }
+
+  .no-data-message {
+    text-align: center;
+    padding: 60px 20px;
+    background-color: white;
+    border-radius: 8px;
+    color: #999;
+  }
+
+  .no-data-message p {
+    margin: 10px 0;
+    font-size: 16px;
+  }
+
+  .suggestion {
+    color: #666;
+    font-size: 14px !important;
+  }
+
+  @media (max-width: 768px) {
+    .valores-container {
+      padding: 40px 15px;
+    }
+
+    .valores-header h1 {
+      font-size: 28px;
+    }
+
+    .pricing-section h2 {
+      font-size: 24px;
+      margin-bottom: 30px;
+    }
+
+    .cards-grid {
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+
+    .year-buttons {
+      gap: 8px;
+    }
+
+    .year-btn {
+      padding: 8px 16px;
+      font-size: 13px;
+    }
+
+    .card-header h3 {
+      font-size: 20px;
+    }
+
+    .price {
+      font-size: 28px;
+    }
+  }
+</style>

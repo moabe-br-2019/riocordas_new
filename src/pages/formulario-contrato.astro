@@ -1,6 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import Footer from '../components/Footer.astro';
+// Footer removido conforme solicitado
+import { CONTRACT_CLAUSES } from '../data/contractClauses';
 ---
 
 <Layout
@@ -33,10 +34,6 @@ import Footer from '../components/Footer.astro';
             <div class="form-header">
                 <h1>Formulário de Contrato</h1>
                 <p class="form-subtitle">Preencha as informações abaixo para formalizar sua contratação</p>
-                <div class="progress-bar">
-                    <div class="progress-fill" id="progressFill"></div>
-                </div>
-                <p class="progress-text">Etapa <span id="currentStep">1</span> de <span id="totalSteps">7</span></p>
             </div>
 
             <!-- Email Display Bar -->
@@ -52,7 +49,7 @@ import Footer from '../components/Footer.astro';
 
             <form id="contractForm" class="contract-form">
                 <!-- ETAPA 0: Email e Captcha -->
-                <div class="form-step" id="step-0" data-step="0">
+                <div class="form-step" id="step-0">
                     <div class="form-hint">
                         <i class="fas fa-envelope"></i>
                         Por favor, insira seu e-mail antes de iniciar.<br>O contrato completo será enviado posteriormente para o endereço de e-mail informado.
@@ -64,13 +61,14 @@ import Footer from '../components/Footer.astro';
                     </div>
                     <div class="form-group">
                         <label>Captcha*</label>
+                        <!-- Substitua pelo sitekey real -->
                         <div class="g-recaptcha" data-sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"></div>
                         <div class="error-message" id="captchaError"></div>
                     </div>
                 </div>
 
                 <!-- ETAPA 1: Dados do Contratante -->
-                <div class="form-step" id="step-1" data-step="1" style="display: none;">
+                <div class="form-step" id="step-1" style="display: none;">
                     <h2>Dados do Contratante</h2>
                     <div class="form-hint">
                         <i class="fas fa-info-circle"></i>
@@ -85,7 +83,6 @@ import Footer from '../components/Footer.astro';
                         <div class="form-group">
                             <label for="rg">RG <span class="optional">(opcional)</span></label>
                             <input type="text" id="rg" name="rg" placeholder="Seu RG">
-                            <div class="error-message"></div>
                         </div>
                         <div class="form-group">
                             <label for="cpf">CPF*</label>
@@ -108,23 +105,22 @@ import Footer from '../components/Footer.astro';
                 </div>
 
                 <!-- ETAPA 2: Dados do Evento -->
-                <div class="form-step" id="step-2" data-step="2" style="display: none;">
+                <div class="form-step" id="step-2" style="display: none;">
                     <h2>Dados do Evento</h2>
                     <div class="form-group">
                         <label for="venueName">Nome da Casa de Festas ou Igreja</label>
                         <input type="text" id="venueName" name="venueName" placeholder="Ex: Igreja São José">
-                        <div class="error-message"></div>
                     </div>
                     <div class="form-group">
                         <label for="venueAddress">Endereço do Evento*</label>
                         <input type="text" id="venueAddress" name="venueAddress" required aria-required="true" placeholder="Endereço completo">
-                        <div class="error-message"></div>
+                        <div class="error-message" id="venueAddressError"></div>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
                             <label for="eventDate">Data do Evento*</label>
                             <input type="date" id="eventDate" name="eventDate" required aria-required="true">
-                            <div class="error-message"></div>
+                            <div class="error-message" id="eventDateError"></div>
                         </div>
                         <div class="form-group">
                             <label for="guestArrivalTime">Horário de Chegada dos Convidados*</label>
@@ -142,13 +138,13 @@ import Footer from '../components/Footer.astro';
                         <div class="form-group">
                             <label for="guestCount">Número de Convidados*</label>
                             <input type="number" id="guestCount" name="guestCount" required aria-required="true" min="1" placeholder="Aproximadamente">
-                            <div class="error-message"></div>
+                            <div class="error-message" id="guestCountError"></div>
                         </div>
                     </div>
                 </div>
 
                 <!-- ETAPA 3: Formação Instrumental -->
-                <div class="form-step" id="step-3" data-step="3" style="display: none;">
+                <div class="form-step" id="step-3" style="display: none;">
                     <h2>Formação Instrumental</h2>
                     <p class="form-description">Escolha a formação que deseja para seu evento:</p>
                     <div class="radio-group">
@@ -172,8 +168,8 @@ import Footer from '../components/Footer.astro';
                     <div class="error-message" id="formationError"></div>
                 </div>
 
-                <!-- ETAPA 3.1: Instrumentos Escolhidos -->
-                <div class="form-step" id="step-3-1" data-step="3-1" style="display: none;">
+                <!-- ETAPA 4: Instrumentos Escolhidos -->
+                <div class="form-step" id="step-4" style="display: none;">
                     <h2>Instrumentos da Formação</h2>
                     <div class="radio-group" id="instrumentsContainer">
                         <!-- Preenchido dinamicamente pelo JavaScript -->
@@ -181,8 +177,8 @@ import Footer from '../components/Footer.astro';
                     <div class="error-message" id="instrumentsError"></div>
                 </div>
 
-                <!-- ETAPA 3.2: Trompete Triunfal -->
-                <div class="form-step" id="step-3-2" data-step="3-2" style="display: none;">
+                <!-- ETAPA 5: Trompete Triunfal -->
+                <div class="form-step" id="step-5" style="display: none;">
                     <h2>Trompete Triunfal</h2>
                     <p class="form-description">Deseja adicionar trompete para a entrada dos noivos?</p>
                     <div class="radio-group">
@@ -202,8 +198,8 @@ import Footer from '../components/Footer.astro';
                     <div class="error-message" id="trumpetError"></div>
                 </div>
 
-                <!-- ETAPA 3.3: Sonorização -->
-                <div class="form-step" id="step-3-3" data-step="3-3" style="display: none;">
+                <!-- ETAPA 6: Sonorização -->
+                <div class="form-step" id="step-6" style="display: none;">
                     <h2>Sonorização</h2>
                     <p class="form-description">Deseja contratar sonorização para o evento?</p>
                     <div class="radio-group">
@@ -219,46 +215,22 @@ import Footer from '../components/Footer.astro';
                     <div class="error-message" id="soundError"></div>
                 </div>
 
-                <!-- ETAPA 4: Cláusulas do Contrato -->
-                <div class="form-step" id="step-4" data-step="4" style="display: none;">
+                <!-- ETAPA 7: Termos e Condições -->
+                <div class="form-step" id="step-7" style="display: none;">
                     <h2>Termos e Condições do Contrato</h2>
                     <div class="contract-clauses">
-                        <textarea id="clauses" readonly>CONTRATO DE PRESTAÇÃO DE SERVIÇOS MUSICAIS
-
-Rio Cordas - Músicos para Eventos
-
-CLÁUSULAS GERAIS:
-
-1. O contratante concorda com os termos e condições de prestação de serviços musicais.
-
-2. Os músicos comparecerão no local do evento no horário combinado e realizarão o trabalho conforme combinado.
-
-3. É de responsabilidade do contratante fornecer local seguro e adequado para os músicos e seus instrumentos.
-
-4. Alterações no programa musical devem ser comunicadas com antecedência de no mínimo 7 dias.
-
-5. Atrasos no pagamento poderão resultar em cancelamento dos serviços.
-
-6. Cancelamento com menos de 15 dias de antecedência resultará em perda de 50% do sinal.
-
-7. Os direitos autorais dos arranjos musicais e da obra musical pertencem aos músicos.
-
-8. A Rio Cordas não se responsabiliza por danos causados aos instrumentos ou equipamentos por negligência do contratante.
-
-9. Em caso de impossibilidade do músico, a Rio Cordas fornecerá substituto de igual qualidade.
-
-10. Todas as despesas extras (transportes, pernoites, etc.) devem ser previamente combinadas e confirmadas.
-                        </textarea>
+                        <!-- Aqui usamos a variável importada -->
+                        <textarea id="clauses" readonly>{CONTRACT_CLAUSES}</textarea>
                     </div>
                     <label class="checkbox-option">
                         <input type="checkbox" id="acceptTerms" name="acceptTerms" required aria-required="true">
-                        <span>Aceito os termos e condições do contrato*</span>
+                        <span>Li e concordo com os Termos e Condições da Contratação descritos acima, incluindo a política de cancelamento e tolerância de horários.*</span>
                     </label>
                     <div class="error-message" id="termsError"></div>
                 </div>
 
-                <!-- ETAPA 5: Forma de Pagamento -->
-                <div class="form-step" id="step-5" data-step="5" style="display: none;">
+                <!-- ETAPA 8: Forma de Pagamento -->
+                <div class="form-step" id="step-8" style="display: none;">
                     <h2>Forma de Pagamento</h2>
                     <p class="form-description">Escolha a forma de pagamento que deseja:</p>
                     <div class="radio-group">
@@ -278,12 +250,12 @@ CLÁUSULAS GERAIS:
                     <div class="error-message" id="paymentError"></div>
                 </div>
 
-                <!-- ETAPA 6: Considerações Finais -->
-                <div class="form-step" id="step-6" data-step="6" style="display: none;">
+                <!-- ETAPA 9: Considerações Finais -->
+                <div class="form-step" id="step-9" style="display: none;">
                     <h2>Considerações Finais</h2>
                     <div class="form-group">
                         <label for="finalObservations">Perguntas, dúvidas ou solicitações especiais:</label>
-                        <textarea id="finalObservations" name="finalObservations" placeholder="Deixe aqui qualquer pergunta, dúvida sobre as cláusulas ou qualquer outra solicitação que tenha a fazer..."></textarea>
+                        <textarea id="finalObservations" name="finalObservations" placeholder="Deixe aqui qualquer pergunta, dúvida sobre as cláusulas ou qualquer outra solicitação..."></textarea>
                     </div>
                 </div>
 
@@ -295,10 +267,18 @@ CLÁUSULAS GERAIS:
                 </div>
             </form>
 
+            <!-- Overlay de Carregamento -->
+            <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+                <div class="loading-container">
+                    <div class="spinner"></div>
+                    <p class="loading-text">Enviando seu contrato...</p>
+                </div>
+            </div>
+
             <!-- Mensagem de Sucesso -->
             <div id="successMessage" class="success-message" style="display: none;">
                 <div class="success-icon">
-                    <i class="fas fa-check-circle"></i>
+                    <i class="fas fa-check"></i>
                 </div>
                 <h3>Contrato Enviado com Sucesso!</h3>
                 <p>Obrigado pelo seu contato. Em breve entraremos em contato para confirmar os detalhes e formas de pagamento.</p>
@@ -323,1216 +303,472 @@ CLÁUSULAS GERAIS:
                     </div>
                 </div>
             </div>
-
-            <!-- Mensagem de Erro -->
-            <div id="errorMessage" class="error-message-container" style="display: none;">
-                <div class="error-icon">
-                    <i class="fas fa-exclamation-circle"></i>
-                </div>
-                <h3>Erro ao Enviar</h3>
-                <p id="errorText">Ocorreu um erro ao enviar o formulário. Tente novamente.</p>
-            </div>
         </div>
     </div>
-    <Footer />
 </Layout>
 
 <style>
-.contract-form-wrapper {
-    background-color: #f9f9f9;
-    padding: 60px 20px;
-    min-height: 80vh;
-    position: relative;
-}
-
-/* Modal Styles */
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-    animation: fadeIn 0.3s ease;
-}
-
-.modal-content {
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-    max-width: 500px;
-    width: 90%;
-    animation: slideUp 0.3s ease;
-}
-
-.modal-header {
-    padding: 25px 25px 15px;
-    border-bottom: 1px solid #e0e0e0;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.modal-header h3 {
-    font-family: 'Playfair Display', serif;
-    font-size: 20px;
-    color: #333;
-    margin: 0;
-}
-
-.modal-close {
-    background: none;
-    border: none;
-    font-size: 32px;
-    cursor: pointer;
-    color: #999;
-    padding: 0;
-    width: 30px;
-    height: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: color 0.3s ease;
-}
-
-.modal-close:hover {
-    color: #333;
-}
-
-.modal-body {
-    padding: 25px;
-}
-
-.modal-footer {
-    padding: 15px 25px 25px;
-    display: flex;
-    gap: 15px;
-    justify-content: flex-end;
-}
-
-.modal-footer .btn-primary,
-.modal-footer .btn-secondary {
-    flex: none;
-    padding: 10px 25px;
-    font-size: 14px;
-}
-
-@keyframes slideUp {
-    from {
-        transform: translateY(20px);
-        opacity: 0;
-    }
-    to {
-        transform: translateY(0);
-        opacity: 1;
-    }
-}
-
-/* Email Display Bar */
-.email-display-bar {
-    background-color: white;
-    border-bottom: 1px solid #e0e0e0;
-    padding: 15px 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.email-display-content {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    max-width: 800px;
-}
-
-.email-label {
-    font-weight: 600;
-    color: #333;
-    font-size: 14px;
-}
-
-.email-value {
-    color: var(--accent-color);
-    font-size: 14px;
-    word-break: break-all;
-}
-
-.btn-edit-email {
-    background: none;
-    border: none;
-    color: var(--accent-color);
-    cursor: pointer;
-    font-size: 16px;
-    padding: 5px;
-    transition: color 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.btn-edit-email:hover {
-    color: #d93600;
-}
-
-.contract-container {
-    max-width: 800px;
-    margin: 0 auto;
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-}
-
-.form-header {
-    background: #000000;
-    color: white;
-    padding: 40px 30px;
-    text-align: center;
-}
-
-.form-header h1 {
-    font-family: 'Playfair Display', serif;
-    font-size: 32px;
-    margin-bottom: 10px;
-}
-
-.form-subtitle {
-    font-size: 16px;
-    opacity: 0.9;
-    margin-bottom: 25px;
-}
-
-.progress-bar {
-    height: 8px;
-    background-color: rgba(255, 255, 255, 0.3);
-    border-radius: 10px;
-    overflow: hidden;
-    margin-bottom: 15px;
-    max-width: 400px;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.progress-fill {
-    height: 100%;
-    background-color: white;
-    border-radius: 10px;
-    width: 14.28%;
-    transition: width 0.3s ease;
-}
-
-.progress-text {
-    font-size: 13px;
-    opacity: 0.85;
-}
-
-.contract-form {
-    padding: 40px 30px;
-}
-
-.form-step {
-    animation: fadeIn 0.5s ease;
-    opacity: 1;
-    transition: opacity 0.5s ease;
-}
-
-.form-step.fade-out {
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
-.form-step h2 {
-    font-family: 'Playfair Display', serif;
-    font-size: 24px;
-    color: #333;
-    margin-bottom: 25px;
-    border-bottom: 2px solid #f0f0f0;
-    padding-bottom: 15px;
-}
-
-.form-description {
-    color: #666;
-    margin-bottom: 20px;
-    font-size: 15px;
-}
-
-.form-group {
-    margin-bottom: 25px;
-}
-
-.form-group label {
-    display: block;
-    margin-bottom: 10px;
-    font-weight: 500;
-    color: #333;
-    font-size: 14px;
-}
-
-.form-group input[type="text"],
-.form-group input[type="email"],
-.form-group input[type="tel"],
-.form-group input[type="date"],
-.form-group input[type="time"],
-.form-group input[type="number"],
-.form-group textarea {
-    width: 100%;
-    padding: 12px 15px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-family: 'Montserrat', sans-serif;
-    font-size: 14px;
-    transition: border-color 0.3s ease;
-    box-sizing: border-box;
-}
-
-.form-group input[type="text"]:focus,
-.form-group input[type="email"]:focus,
-.form-group input[type="tel"]:focus,
-.form-group input[type="date"]:focus,
-.form-group input[type="time"]:focus,
-.form-group input[type="number"]:focus,
-.form-group textarea:focus {
-    outline: none;
-    border-color: var(--accent-color);
-    box-shadow: 0 0 0 3px rgba(242, 60, 0, 0.1);
-}
-
-.form-group textarea {
-    resize: vertical;
-    min-height: 120px;
-    font-family: 'Montserrat', sans-serif;
-    width: 100%;
-}
-
-.form-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-}
-
-.radio-group {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.radio-option,
-.checkbox-option {
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-    padding: 12px 15px;
-    border: 2px solid #e0e0e0;
-    border-radius: 4px;
-    transition: all 0.3s ease;
-}
-
-.radio-option:hover,
-.checkbox-option:hover {
-    border-color: var(--accent-color);
-    background-color: rgba(242, 60, 0, 0.05);
-}
-
-.radio-option input[type="radio"],
-.radio-option input[type="checkbox"],
-.checkbox-option input[type="checkbox"] {
-    margin-right: 12px;
-    cursor: pointer;
-    width: 18px;
-    height: 18px;
-    accent-color: var(--accent-color);
-}
-
-.radio-label {
-    font-size: 15px;
-    color: #333;
-}
-
-.captcha-box {
-    border: 2px solid #ddd;
-    border-radius: 4px;
-    padding: 15px;
-    display: flex;
-    align-items: center;
-}
-
-.captcha-label {
-    margin-left: 10px;
-    margin-bottom: 0;
-    font-weight: 400;
-    color: #666;
-}
-
-.contract-clauses textarea {
-    font-family: 'Courier New', monospace;
-    font-size: 12px;
-    line-height: 1.6;
-    background-color: #f9f9f9;
-    color: #333;
-    min-height: 300px;
-    width: 100%;
-}
-
-@media (min-width: 769px) {
-    .contract-clauses textarea {
-        min-height: 500px;
-    }
-}
-
-.form-hint {
-    background-color: rgba(242, 60, 0, 0.08);
-    border-left: 4px solid var(--accent-color);
-    padding: 15px 15px;
-    border-radius: 4px;
-    margin-bottom: 25px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 14px;
-    color: #d93600;
-    line-height: 1.6;
-}
-
-.form-hint i {
-    font-size: 18px;
-    flex-shrink: 0;
-}
-
-.field-hint {
-    font-size: 12px;
-    color: #999;
-    margin-top: 5px;
-    margin-bottom: 0;
-    font-style: italic;
-}
-
-.optional {
-    color: #999;
-    font-size: 12px;
-    font-weight: 400;
-}
-
-.error-message {
-    color: #ff3b30;
-    font-size: 12px;
-    margin-top: 5px;
-    display: none;
-}
-
-.error-message.active {
-    display: block;
-}
-
-.error-message-container,
-.success-message {
-    text-align: center;
-    padding: 50px 30px;
-}
-
-.error-icon,
-.success-icon {
-    font-size: 80px;
-    margin-bottom: 30px;
-    padding: 20px;
-    display: inline-block;
-    animation: scaleIn 0.5s ease;
-    border-radius: 50%;
-}
-
-.error-icon {
-    color: #ff3b30;
-    background-color: rgba(255, 59, 48, 0.1);
-}
-
-.success-icon {
-    color: #2ecc71;
-    background-color: rgba(46, 204, 113, 0.1);
-}
-
-.error-message-container h3,
-.success-message h3 {
-    font-family: 'Playfair Display', serif;
-    font-size: 26px;
-    color: #333;
-    margin-bottom: 15px;
-}
-
-.error-message-container p,
-.success-message p {
-    color: #666;
-    font-size: 15px;
-    line-height: 1.6;
-}
-
-.form-navigation {
-    display: flex;
-    gap: 15px;
-    margin-top: 40px;
-    justify-content: space-between;
-}
-
-.btn-primary,
-.btn-secondary,
-.btn-submit {
-    padding: 12px 30px;
-    font-size: 15px;
-    font-weight: 600;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-family: 'Montserrat', sans-serif;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.btn-primary,
-.btn-submit {
-    background-color: var(--accent-color);
-    color: white;
-    flex: 1;
-}
-
-.btn-primary:hover,
-.btn-submit:hover {
-    background-color: #d93600;
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(242, 60, 0, 0.3);
-}
-
-.btn-secondary {
-    background-color: #e0e0e0;
-    color: #333;
-    flex: 1;
-}
-
-.btn-secondary:hover {
-    background-color: #d0d0d0;
-    transform: translateY(-2px);
-}
-
-.success-actions {
-    display: flex;
-    flex-direction: row;
-    gap: 40px;
-    margin-top: 40px;
-    justify-content: center;
-    flex-wrap: wrap;
-}
-
-.btn-action {
-    display: inline-block;
-    padding: 12px 30px;
-    font-size: 15px;
-    font-weight: 600;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-family: 'Montserrat', sans-serif;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    text-decoration: none;
-    text-align: center;
-}
-
-.btn-action.btn-icon {
-    padding: 0;
-    border-radius: 50%;
-    width: 60px;
-    height: 60px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0;
-}
-
-.btn-action.btn-icon i {
-    font-size: 28px;
-    display: block;
-    line-height: 1;
-}
-
-@media (max-width: 480px) {
+    /* ... seus estilos existentes ... */
+    .contract-form-wrapper { background-color: #f9f9f9; padding: 60px 20px; min-height: 80vh; position: relative; }
+    .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0, 0, 0, 0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; animation: fadeIn 0.3s ease; }
+    .modal-content { background-color: white; border-radius: 8px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2); max-width: 500px; width: 90%; animation: slideUp 0.3s ease; }
+    .modal-header { padding: 25px 25px 15px; border-bottom: 1px solid #e0e0e0; display: flex; justify-content: space-between; align-items: center; }
+    .modal-header h3 { font-family: 'Playfair Display', serif; font-size: 20px; color: #333; margin: 0; }
+    .modal-close { background: none; border: none; font-size: 32px; cursor: pointer; color: #999; padding: 0; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; transition: color 0.3s ease; }
+    .modal-close:hover { color: #333; }
+    .modal-body { padding: 25px; }
+    .modal-footer { padding: 15px 25px 25px; display: flex; gap: 15px; justify-content: flex-end; }
+    .modal-footer .btn-primary, .modal-footer .btn-secondary { flex: none; padding: 10px 25px; font-size: 14px; }
+    @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    .email-display-bar { background-color: white; border-bottom: 1px solid #e0e0e0; padding: 15px 30px; display: flex; align-items: center; justify-content: center; }
+    .email-display-content { display: flex; align-items: center; gap: 12px; max-width: 800px; }
+    .email-label { font-weight: 600; color: #333; font-size: 14px; }
+    .email-value { color: var(--accent-color); font-size: 14px; word-break: break-all; }
+    .btn-edit-email { background: none; border: none; color: var(--accent-color); cursor: pointer; font-size: 16px; padding: 5px; transition: color 0.3s ease; display: flex; align-items: center; justify-content: center; }
+    .btn-edit-email:hover { color: #d93600; }
+    .contract-container { max-width: 800px; margin: 0 auto; background-color: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); overflow: hidden; }
+    .form-header { background: #000000; color: white; padding: 40px 30px; text-align: center; }
+    .form-header h1 { font-family: 'Playfair Display', serif; font-size: 32px; margin-bottom: 10px; }
+    .form-subtitle { font-size: 16px; opacity: 0.9; margin-bottom: 25px; }
+    .contract-form { padding: 40px 30px; }
+    .form-step { animation: fadeIn 0.5s ease; opacity: 1; transition: opacity 0.5s ease; }
+    .form-step.fade-out { opacity: 0; transition: opacity 0.3s ease; }
+    .form-step h2 { font-family: 'Playfair Display', serif; font-size: 24px; color: #333; margin-bottom: 25px; border-bottom: 2px solid #f0f0f0; padding-bottom: 15px; }
+    .form-description { color: #666; margin-bottom: 20px; font-size: 15px; }
+    .form-group { margin-bottom: 25px; }
+    .form-group label { display: block; margin-bottom: 10px; font-weight: 500; color: #333; font-size: 14px; }
+    .form-group input[type="text"], .form-group input[type="email"], .form-group input[type="tel"], .form-group input[type="date"], .form-group input[type="time"], .form-group input[type="number"], .form-group textarea { width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 4px; font-family: 'Montserrat', sans-serif; font-size: 14px; transition: border-color 0.3s ease; box-sizing: border-box; }
+    .form-group input:focus, .form-group textarea:focus { outline: none; border-color: var(--accent-color); box-shadow: 0 0 0 3px rgba(242, 60, 0, 0.1); }
+    .form-group textarea { resize: vertical; min-height: 120px; font-family: 'Montserrat', sans-serif; width: 100%; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .radio-group { display: flex; flex-direction: column; gap: 15px; }
+    .contract-clauses textarea { font-family: 'Courier New', monospace; font-size: 12px; line-height: 1.6; background-color: #f9f9f9; color: #333; min-height: 300px; width: 100%; }
+    @media (min-width: 769px) { .contract-clauses textarea { min-height: 500px; } }
+    .form-hint { background-color: rgba(242, 60, 0, 0.08); border-left: 4px solid var(--accent-color); padding: 15px 15px; border-radius: 4px; margin-bottom: 25px; display: flex; align-items: center; gap: 10px; font-size: 14px; color: #d93600; line-height: 1.6; }
+    .form-hint i { font-size: 18px; flex-shrink: 0; }
+    .field-hint { font-size: 12px; color: #999; margin-top: 5px; margin-bottom: 0; font-style: italic; }
+    .optional { color: #999; font-size: 12px; font-weight: 400; }
+    .error-message { color: #ff3b30; font-size: 12px; margin-top: 5px; display: none; }
+    .error-message.active { display: block; }
+    .success-message { text-align: center; padding: 50px 30px; }
+    .success-message h3 { font-family: 'Playfair Display', serif; font-size: 26px; color: #333; margin-bottom: 15px; }
+    .success-message p { color: #666; font-size: 15px; line-height: 1.6; }
+    .form-navigation { display: flex; gap: 15px; margin-top: 40px; justify-content: space-between; }
+    .btn-primary, .btn-secondary, .btn-submit { padding: 12px 30px; font-size: 15px; font-weight: 600; border: none; border-radius: 4px; cursor: pointer; transition: all 0.3s ease; font-family: 'Montserrat', sans-serif; text-transform: uppercase; letter-spacing: 0.5px; }
+    .btn-primary, .btn-submit { background-color: var(--accent-color); color: white; flex: 1; }
+    .btn-primary:hover, .btn-submit:hover { background-color: #d93600; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(242, 60, 0, 0.3); }
+    .btn-secondary { background-color: #e0e0e0; color: #333; flex: 1; }
+    .btn-secondary:hover { background-color: #d0d0d0; transform: translateY(-2px); }
+    .success-actions { display: flex; flex-direction: row; gap: 40px; margin-top: 40px; justify-content: center; flex-wrap: wrap; }
+    .btn-action-wrapper { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+    .btn-action-text { font-size: 13px; font-weight: 500; color: #666; }
+    .btn-action { display: inline-block; padding: 12px 30px; font-size: 15px; font-weight: 600; border: none; border-radius: 4px; cursor: pointer; transition: all 0.3s ease; font-family: 'Montserrat', sans-serif; text-transform: uppercase; letter-spacing: 0.5px; text-decoration: none; text-align: center; }
+    
+    /* Estilos para Ícones Redondos */
     .btn-action.btn-icon {
-        width: 50px;
-        height: 50px;
+        padding: 0 !important; 
+        border-radius: 50% !important;
+        width: 60px; 
+        height: 60px;
+        min-width: 60px; 
+        min-height: 60px; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center;
+        font-size: 0; 
+        line-height: 1; 
+        flex-shrink: 0;
     }
-
-    .btn-action.btn-icon i {
-        font-size: 22px;
+    .btn-action.btn-icon i { font-size: 24px; display: block; line-height: 1; }
+    
+    .btn-action.btn-secondary { 
+        background-color: #f0f0f0; 
+        color: #333; 
+        border: 2px solid var(--accent-color); 
     }
-}
-
-.btn-action-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 12px;
-}
-
-.btn-action-text {
-    font-size: 13px;
-    font-weight: 500;
-    color: #666;
-    text-transform: none;
-    letter-spacing: normal;
-}
-
-.btn-action.btn-primary {
-    background-color: var(--accent-color);
-    color: white;
-}
-
-.btn-action.btn-primary:hover {
-    background-color: #d93600;
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(242, 60, 0, 0.3);
-}
-
-.btn-action.btn-secondary {
-    background-color: #f0f0f0;
-    color: #333;
-    border: 2px solid var(--accent-color);
-}
-
-.btn-action.btn-secondary:hover {
-    background-color: var(--accent-color);
-    color: white;
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(242, 60, 0, 0.2);
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
+    .btn-action.btn-secondary:hover { 
+        background-color: var(--accent-color); 
+        color: white; 
+        transform: translateY(-2px); 
+        box-shadow: 0 5px 15px rgba(242, 60, 0, 0.2); 
     }
-    to {
-        opacity: 1;
-        transform: translateY(0);
+    
+    .success-icon, .error-icon {
+        width: 120px; height: 120px; font-size: 60px; margin-bottom: 30px;
+        display: inline-flex; align-items: center; justify-content: center;
+        animation: scaleIn 0.5s ease; border-radius: 50%; line-height: 1;
     }
-}
+    .success-icon { color: #2ecc71; background-color: rgba(46, 204, 113, 0.1); }
+    .error-icon { color: #ff3b30; background-color: rgba(255, 59, 48, 0.1); }
 
-@keyframes scaleIn {
-    0% {
-        transform: scale(0);
-        opacity: 0;
-    }
-    50% {
-        transform: scale(1.1);
-    }
-    100% {
-        transform: scale(1);
-        opacity: 1;
-    }
-}
+    .loading-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0, 0, 0, 0.6); display: flex; align-items: center; justify-content: center; z-index: 2000; }
+    .loading-container { background-color: white; border-radius: 12px; padding: 50px 40px; text-align: center; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3); animation: slideUp 0.3s ease; }
+    .spinner { width: 50px; height: 50px; border: 5px solid #f0f0f0; border-top: 5px solid var(--accent-color); border-radius: 50%; margin: 0 auto 20px; animation: spin 1s linear infinite; }
+    .loading-text { color: #333; font-size: 16px; font-weight: 600; margin: 0; font-family: 'Montserrat', sans-serif; }
 
-@media (max-width: 768px) {
-    .form-row {
-        grid-template-columns: 1fr;
-        gap: 0;
-    }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes scaleIn { 0% { transform: scale(0); opacity: 0; } 50% { transform: scale(1.1); } 100% { transform: scale(1); opacity: 1; } }
+    @media (max-width: 768px) { .form-row { grid-template-columns: 1fr; gap: 0; } .form-header { padding: 30px 20px; } .form-header h1 { font-size: 24px; } .contract-form { padding: 25px 20px; } .form-navigation { flex-direction: column; } .btn-primary, .btn-secondary, .btn-submit { padding: 12px 20px; font-size: 14px; } }
+    @media (max-width: 480px) { .form-header { padding: 20px 15px; } .form-header h1 { font-size: 20px; } .form-header p { font-size: 14px; } .contract-form { padding: 20px 15px; } .form-step h2 { font-size: 20px; } .success-actions { flex-direction: row; gap: 20px; } .btn-action { width: auto; padding: 12px 20px; font-size: 14px; } .btn-action-wrapper { gap: 8px; } .btn-action-text { font-size: 11px; } .success-icon { width: 80px; height: 80px; font-size: 40px; } }
+</style>
 
-    .form-header {
-        padding: 30px 20px;
+<style is:global>
+    /* Estilo para radio options dinâmicos */
+    .radio-option, .checkbox-option {
+        display: flex; align-items: center; cursor: pointer; padding: 12px 15px;
+        border: 2px solid #e0e0e0; border-radius: 4px; transition: all 0.3s ease;
     }
-
-    .form-header h1 {
-        font-size: 24px;
+    .radio-option:hover, .checkbox-option:hover {
+        border-color: var(--accent-color); background-color: rgba(242, 60, 0, 0.05);
     }
-
-    .contract-form {
-        padding: 25px 20px;
+    .radio-option input[type="radio"], .radio-option input[type="checkbox"], .checkbox-option input[type="checkbox"] {
+        margin-right: 12px; cursor: pointer; width: 18px; height: 18px; accent-color: var(--accent-color);
     }
-
-    .form-navigation {
-        flex-direction: column;
-    }
-
-    .btn-primary,
-    .btn-secondary,
-    .btn-submit {
-        padding: 12px 20px;
-        font-size: 14px;
-    }
-}
-
-@media (max-width: 480px) {
-    .form-header {
-        padding: 20px 15px;
-    }
-
-    .form-header h1 {
-        font-size: 20px;
-    }
-
-    .form-header p {
-        font-size: 14px;
-    }
-
-    .contract-form {
-        padding: 20px 15px;
-    }
-
-    .form-step h2 {
-        font-size: 20px;
-    }
-
-    .success-actions {
-        flex-direction: row;
-        gap: 20px;
-    }
-
-    .btn-action {
-        width: auto;
-        padding: 12px 20px;
-        font-size: 14px;
-    }
-
-
-    .btn-action-wrapper {
-        gap: 8px;
-    }
-
-    .btn-action-text {
-        font-size: 11px;
-    }
-
-    .success-icon {
-        font-size: 60px;
-    }
-}
+    .radio-label { font-size: 15px; color: #333; }
 </style>
 
 <script>
-let currentStep = 0;
-const totalSteps = 10; // 0:Email, 1:Contractor, 2:Event, 3:Formation, 3-1:Instruments, 3-2:Trumpet, 3-3:Sound, 4:Terms, 5:Payment, 6:Observations
+// Sem @ts-nocheck! TypeScript puro agora.
 
-const instrumentOptions = {
-    dueto: [
-        'Violino + Teclado',
-        'Voz + Teclado',
-        'Flauta + Teclado',
-        'Sax + Teclado'
-    ],
-    trio: [
-        'Violino + Cello + Teclado',
-        'Violino + Flauta + Teclado',
-        'Violino + Voz + Teclado',
-        'Violino + Sax + Teclado'
-    ],
-    quarteto: [
-        '2 Violinos + Cello + Teclado',
-        'Violino + Flauta + Cello + Teclado',
-        'Violino + Cello + Voz + Teclado',
-        'Violino + Cello + Sax + Teclado',
-        '2 Violinos + Viola + Cello (Quarteto Clássico)'
-    ],
-    quinteto: [
-        '2 Violinos + Viola + Cello + Teclado',
-        '2 Violinos + Flauta + Cello + Teclado',
-        '2 Violinos + Cello + Voz + Teclado',
-        '2 Violinos + Voz + Sax + Teclado'
-    ]
+interface InstrumentOptions {
+    [key: string]: string[];
+}
+
+let currentStep: number = 0;
+const totalSteps: number = 10;
+
+const instrumentOptions: InstrumentOptions = {
+    dueto: ['Violino + Teclado', 'Voz + Teclado', 'Flauta + Teclado', 'Sax + Teclado'],
+    trio: ['Violino + Cello + Teclado', 'Violino + Flauta + Teclado', 'Violino + Voz + Teclado', 'Violino + Sax + Teclado'],
+    quarteto: ['2 Violinos + Cello + Teclado', 'Violino + Flauta + Cello + Teclado', 'Violino + Cello + Voz + Teclado', 'Violino + Cello + Sax + Teclado', '2 Violinos + Viola + Cello (Quarteto Clássico)'],
+    quinteto: ['2 Violinos + Viola + Cello + Teclado', '2 Violinos + Flauta + Cello + Teclado', '2 Violinos + Cello + Voz + Teclado', '2 Violinos + Voz + Sax + Teclado']
 };
 
 document.addEventListener('DOMContentLoaded', function() {
     const nextBtn = document.getElementById('nextBtn');
     const prevBtn = document.getElementById('prevBtn');
     const submitBtn = document.getElementById('submitBtn');
-    const form = document.getElementById('contractForm');
 
-    // Setup modal email
     setupEmailModal();
 
-    nextBtn.addEventListener('click', () => goToNextStep());
-    prevBtn.addEventListener('click', () => goToPreviousStep());
-    submitBtn.addEventListener('click', () => submitForm());
+    if (nextBtn) nextBtn.addEventListener('click', () => goToNextStep());
+    if (prevBtn) prevBtn.addEventListener('click', () => goToPreviousStep());
+    
+    if (submitBtn) {
+        submitBtn.addEventListener('click', (e: Event) => {
+            e.preventDefault();
+            submitForm();
+        });
+    }
 
-    // Atualizar instrumentos quando a formação mudar
     const formationRadios = document.querySelectorAll('input[name="formation"]');
     formationRadios.forEach(radio => {
         radio.addEventListener('change', updateInstruments);
     });
 
-    // Formatação de CPF
-    const cpfInput = document.getElementById('cpf') as HTMLInputElement | null;
-    if (cpfInput) {
-        cpfInput.addEventListener('input', function(e) {
-            const target = e.target as HTMLInputElement;
-            let value = target.value.replace(/\D/g, '');
-            if (value.length > 0) {
-                if (value.length <= 3) {
-                    value = value;
-                } else if (value.length <= 6) {
-                    value = `${value.substring(0, 3)}.${value.substring(3)}`;
-                } else if (value.length <= 9) {
-                    value = `${value.substring(0, 3)}.${value.substring(3, 6)}.${value.substring(6)}`;
-                } else {
-                    value = `${value.substring(0, 3)}.${value.substring(3, 6)}.${value.substring(6, 9)}-${value.substring(9, 11)}`;
-                }
-            }
-            target.value = value;
-        });
-    }
-
-    // Formatação de Telefone
-    const phoneInput = document.getElementById('phone') as HTMLInputElement | null;
-    if (phoneInput) {
-        phoneInput.addEventListener('input', function(e) {
-            const target = e.target as HTMLInputElement;
-            let value = target.value.replace(/\D/g, '');
-            if (value.length > 0) {
-                if (value.length <= 2) {
-                    value = `(${value}`;
-                } else if (value.length <= 7) {
-                    value = `(${value.substring(0, 2)}) ${value.substring(2)}`;
-                } else if (value.length <= 11) {
-                    value = `(${value.substring(0, 2)}) ${value.substring(2, 7)}-${value.substring(7)}`;
-                } else {
-                    value = `(${value.substring(0, 2)}) ${value.substring(2, 7)}-${value.substring(7, 11)}`;
-                }
-            }
-            target.value = value;
-        });
-    }
+    setupInputMasks();
 
     showStep(currentStep);
-    updateProgressBar();
 });
 
-function showStep(step) {
-    const steps = document.querySelectorAll('.form-step');
+function getInputValue(id: string): string {
+    const el = document.getElementById(id) as HTMLInputElement | HTMLTextAreaElement | null;
+    return el ? el.value.trim() : '';
+}
 
-    // Fade out das etapas atuais
+function isInputChecked(name: string): boolean {
+    const el = document.querySelector(`input[name="${name}"]:checked`);
+    return el !== null;
+}
+
+function getCheckedValue(name: string): string {
+    const el = document.querySelector(`input[name="${name}"]:checked`) as HTMLInputElement | null;
+    return el ? el.value : '';
+}
+
+function showStep(step: number) {
+    const steps = document.querySelectorAll('.form-step');
     steps.forEach(s => {
-        if (s.style.display !== 'none') {
-            s.classList.add('fade-out');
-        }
+        const el = s as HTMLElement;
+        if (el.style.display !== 'none') el.classList.add('fade-out');
     });
 
-    // Aguarda a animação de fade out antes de trocar
     setTimeout(() => {
         steps.forEach(s => {
-            s.style.display = 'none';
-            s.classList.remove('fade-out');
+            const el = s as HTMLElement;
+            el.style.display = 'none';
+            el.classList.remove('fade-out');
         });
 
-        const currentStepElement = document.getElementById(`step-${step}`);
+        const currentStepElement = document.getElementById('step-' + step);
         if (currentStepElement) {
             currentStepElement.style.display = 'block';
-            // Força reflow para disparar a animação
-            currentStepElement.offsetHeight;
         }
 
-        // Atualizar visibilidade da email display bar (mostra em todas as etapas exceto a 0)
         const emailDisplayBar = document.getElementById('emailDisplayBar');
-        if (step > 0) {
-            emailDisplayBar!.style.display = 'flex';
-        } else {
-            emailDisplayBar!.style.display = 'none';
+        if (emailDisplayBar) {
+            emailDisplayBar.style.display = step > 0 ? 'flex' : 'none';
         }
 
-        // Atualizar visibilidade dos botões
         const prevBtn = document.getElementById('prevBtn');
         const nextBtn = document.getElementById('nextBtn');
         const submitBtn = document.getElementById('submitBtn');
 
-        // Mostrar botão voltar: só a partir da etapa 1 (Dados do Contratante)
-        const stepNum = typeof step === 'string' ? parseInt(step.split('-')[0]) : step;
-        prevBtn.style.display = stepNum >= 1 ? 'block' : 'none';
+        if (prevBtn) prevBtn.style.display = step > 0 ? 'block' : 'none';
+        if (submitBtn) submitBtn.style.display = step === 9 ? 'block' : 'none';
+        if (nextBtn) nextBtn.style.display = step !== 9 ? 'block' : 'none';
 
-        // Submit button appears on last step (step 6)
-        submitBtn.style.display = step === 6 ? 'block' : 'none';
-        // Next button appears on all steps except last (step 6)
-        nextBtn.style.display = step !== 6 ? 'block' : 'none';
-
-        // Scroll ao topo
         document.querySelector('.contract-form')?.scrollIntoView({ behavior: 'smooth' });
     }, 300);
 }
 
 function goToNextStep() {
     if (validateStep(currentStep)) {
-        // Lógica especial para navegação das etapas 3.x
         if (currentStep === 3) {
-            // Após escolher formação, ir para instrumentos (3-1)
-            showStep('3-1');
-            updateProgressBar();
-            return;
-        } else if (currentStep === '3-1') {
-            // Após instrumentos, ir para trompetes (3-2)
-            showStep('3-2');
-            updateProgressBar();
-            return;
-        } else if (currentStep === '3-2') {
-            // Após trompetes, ir para sonorização (3-3)
-            showStep('3-3');
-            updateProgressBar();
-            return;
-        } else if (currentStep === '3-3') {
-            // Após sonorização, ir para termos (step 4)
-            currentStep = 4;
-        } else {
-            currentStep++;
+            updateInstruments();
         }
-
-        if (currentStep === 1) {
-            updateEmailDisplay();
-        }
+        currentStep++;
+        if (currentStep === 1) updateEmailDisplay();
         showStep(currentStep);
-        updateProgressBar();
     }
 }
 
 function goToPreviousStep() {
-    // Lógica especial para voltar das etapas 3.x
-    if (currentStep === '3-1') {
-        showStep(3);
-    } else if (currentStep === '3-2') {
-        showStep('3-1');
-    } else if (currentStep === '3-3') {
-        showStep('3-2');
-    } else if (currentStep > 0) {
+    if (currentStep > 0) {
         currentStep--;
         showStep(currentStep);
-    } else {
-        return;
     }
-    updateProgressBar();
 }
 
-function updateProgressBar() {
-    let stepNumber = currentStep;
-    // Map the steps to their position in the flow
-    // 0:Email(1), 1:Contractor(2), 2:Event(3), 3:Formation(4), 3-1:Instruments(5), 3-2:Trumpet(6), 3-3:Sound(7), 4:Terms(8), 5:Payment(9), 6:Observations(10)
-    if (currentStep === '3-1') stepNumber = 4;
-    else if (currentStep === '3-2') stepNumber = 5;
-    else if (currentStep === '3-3') stepNumber = 6;
-
-    const percentage = ((stepNumber + 1) / totalSteps) * 100;
-    const progressFill = document.getElementById('progressFill');
-    progressFill.style.width = percentage + '%';
-
-    document.getElementById('currentStep').textContent = stepNumber + 1;
-}
-
-function validateStep(step) {
-    const step0 = document.getElementById('step-0');
-    const step1 = document.getElementById('step-1');
-    const step2 = document.getElementById('step-2');
-    const step3 = document.getElementById('step-3');
-    const step31 = document.getElementById('step-3-1');
-    const step32 = document.getElementById('step-3-2');
-    const step33 = document.getElementById('step-3-3');
-    const step4 = document.getElementById('step-4');
-    const step5 = document.getElementById('step-5');
-
+function validateStep(step: number): boolean {
     let isValid = true;
-
     if (step === 0) {
-        const email = (document.getElementById('email') as HTMLInputElement).value;
-        const recaptchaResponse = (window as any).grecaptcha?.getResponse?.();
-
+        const email = getInputValue('email');
+        const recaptchaResponse = (window as any).grecaptcha && (window as any).grecaptcha.getResponse ? (window as any).grecaptcha.getResponse() : '';
         if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-            showError('emailError', 'Por favor, informe um email válido.');
-            isValid = false;
-        }
+            showError('emailError', 'Email inválido.'); isValid = false;
+        } else clearError('emailError');
         if (!recaptchaResponse) {
-            showError('captchaError', 'Por favor, confirme que não é um robô.');
-            isValid = false;
-        }
+             showError('captchaError', 'Confirme que não é um robô.'); isValid = false;
+        } else clearError('captchaError');
     } else if (step === 1) {
-        const fullName = (document.getElementById('fullName') as HTMLInputElement).value.trim();
-        const cpf = (document.getElementById('cpf') as HTMLInputElement).value.trim();
-        const address = (document.getElementById('address') as HTMLInputElement).value.trim();
-        const phone = (document.getElementById('phone') as HTMLInputElement).value.trim();
-
-        if (!fullName) {
-            showError('fullNameError', 'Por favor, informe seu nome completo.');
-            isValid = false;
-        } else {
-            clearError('fullNameError');
-        }
-
-        if (!cpf) {
-            showError('cpfError', 'CPF é obrigatório.');
-            isValid = false;
-        } else if (!isValidCPF(cpf)) {
-            showError('cpfError', 'CPF inválido. Verifique o número digitado.');
-            isValid = false;
-        } else {
-            clearError('cpfError');
-        }
-
-        if (!address) {
-            showError('addressError', 'Por favor, informe seu endereço.');
-            isValid = false;
-        } else {
-            clearError('addressError');
-        }
-
-        if (!phone) {
-            showError('phoneError', 'Celular é obrigatório.');
-            isValid = false;
-        } else if (phone.replace(/\D/g, '').length < 10) {
-            showError('phoneError', 'Telefone deve ter pelo menos 10 dígitos.');
-            isValid = false;
-        } else {
-            clearError('phoneError');
-        }
+        if (!getInputValue('fullName')) { showError('fullNameError', 'Nome obrigatório.'); isValid = false; } else clearError('fullNameError');
+        const cpf = getInputValue('cpf');
+        if (!cpf) { showError('cpfError', 'CPF obrigatório.'); isValid = false; }
+        else if (!isValidCPF(cpf)) { showError('cpfError', 'CPF inválido.'); isValid = false; } else clearError('cpfError');
+        if (!getInputValue('address')) { showError('addressError', 'Endereço obrigatório.'); isValid = false; } else clearError('addressError');
+        const phone = getInputValue('phone');
+        if (!phone || phone.replace(/\D/g, '').length < 10) { showError('phoneError', 'Celular inválido.'); isValid = false; } else clearError('phoneError');
     } else if (step === 2) {
-        const venueAddress = (document.getElementById('venueAddress') as HTMLInputElement).value;
-        const eventDate = (document.getElementById('eventDate') as HTMLInputElement).value;
-        const guestCount = (document.getElementById('guestCount') as HTMLInputElement).value;
-        const guestArrivalTime = (document.getElementById('guestArrivalTime') as HTMLInputElement).value;
-        const ceremonyStartTime = (document.getElementById('ceremonyStartTime') as HTMLInputElement).value;
-
-        if (!venueAddress) isValid = false;
-        if (!eventDate) isValid = false;
-        if (!guestCount) isValid = false;
-
-        if (guestArrivalTime && ceremonyStartTime) {
-            const [arrivalHours, arrivalMinutes] = guestArrivalTime.split(':').map(Number);
-            const [ceremonyHours, ceremonyMinutes] = ceremonyStartTime.split(':').map(Number);
-
-            const arrivalTotalMinutes = arrivalHours * 60 + arrivalMinutes;
-            const ceremonyTotalMinutes = ceremonyHours * 60 + ceremonyMinutes;
-
-            const diffMinutes = ceremonyTotalMinutes - arrivalTotalMinutes;
-
-            if (diffMinutes < 0) {
-                showError('ceremonyStartTimeError', 'O horário de início da cerimônia deve ser após o horário de chegada dos convidados.');
-                isValid = false;
-            } else if (diffMinutes > 60) {
-                showError('guestArrivalTimeError', 'Máximo de 1 hora entre a chegada dos convidados e o início da cerimônia.');
-                isValid = false;
-            } else {
-                clearError('guestArrivalTimeError');
-                clearError('ceremonyStartTimeError');
-            }
+        if (!getInputValue('venueAddress')) { showError('venueAddressError', 'Endereço do evento obrigatório.'); isValid = false; } else clearError('venueAddressError');
+        if (!getInputValue('eventDate')) { showError('eventDateError', 'Data obrigatória.'); isValid = false; } else clearError('eventDateError');
+        if (!getInputValue('guestCount')) { showError('guestCountError', 'Nº de convidados obrigatório.'); isValid = false; } else clearError('guestCountError');
+        const guestTime = getInputValue('guestArrivalTime');
+        const ceremonyTime = getInputValue('ceremonyStartTime');
+        if (!guestTime || !ceremonyTime) {
+             if(!guestTime) showError('guestArrivalTimeError', 'Horário obrigatório.');
+             if(!ceremonyTime) showError('ceremonyStartTimeError', 'Horário obrigatório.');
+             isValid = false;
+        } else {
+            const [ah, am] = guestTime.split(':').map(Number);
+            const [ch, cm] = ceremonyTime.split(':').map(Number);
+            const totalA = ah * 60 + am;
+            const totalC = ch * 60 + cm;
+            const diff = totalC - totalA;
+            if (diff < 0) { showError('ceremonyStartTimeError', 'Cerimônia deve ser após chegada.'); isValid = false; }
+            else if (diff > 60) { showError('guestArrivalTimeError', 'Intervalo máx de 1h.'); isValid = false; }
+            else { clearError('guestArrivalTimeError'); clearError('ceremonyStartTimeError'); }
         }
     } else if (step === 3) {
-        const formation = (document.querySelector('input[name="formation"]:checked') as HTMLInputElement);
-        if (!formation) {
-            showError('formationError', 'Por favor, escolha uma formação.');
-            isValid = false;
-        }
-    } else if (step === '3-1') {
-        const instruments = (document.querySelector('input[name="instruments"]:checked') as HTMLInputElement);
-        if (!instruments) {
-            showError('instrumentsError', 'Por favor, escolha uma combinação de instrumentos.');
-            isValid = false;
-        }
-    } else if (step === '3-2') {
-        const trumpet = (document.querySelector('input[name="trumpet"]:checked') as HTMLInputElement);
-        if (!trumpet) {
-            showError('trumpetError', 'Por favor, escolha uma opção de trompete.');
-            isValid = false;
-        }
-    } else if (step === '3-3') {
-        const sound = (document.querySelector('input[name="sound"]:checked') as HTMLInputElement);
-        if (!sound) {
-            showError('soundError', 'Por favor, escolha uma opção de sonorização.');
-            isValid = false;
-        }
+        if (!isInputChecked('formation')) { showError('formationError', 'Escolha uma formação.'); isValid = false; } else clearError('formationError');
     } else if (step === 4) {
-        const acceptTerms = (document.getElementById('acceptTerms') as HTMLInputElement).checked;
-        if (!acceptTerms) {
-            showError('termsError', 'Por favor, aceite os termos e condições.');
-            isValid = false;
-        }
+        if (!isInputChecked('instruments')) { showError('instrumentsError', 'Escolha os instrumentos.'); isValid = false; } else clearError('instrumentsError');
     } else if (step === 5) {
-        const payment = (document.querySelector('input[name="payment"]:checked') as HTMLInputElement);
-        if (!payment) {
-            showError('paymentError', 'Por favor, escolha uma forma de pagamento.');
-            isValid = false;
-        }
+        if (!isInputChecked('trumpet')) { showError('trumpetError', 'Escolha uma opção.'); isValid = false; } else clearError('trumpetError');
+    } else if (step === 6) {
+        if (!isInputChecked('sound')) { showError('soundError', 'Escolha uma opção.'); isValid = false; } else clearError('soundError');
+    } else if (step === 7) {
+        const terms = document.getElementById('acceptTerms') as HTMLInputElement | null;
+        if (!terms || !terms.checked) { showError('termsError', 'Aceite os termos.'); isValid = false; } else clearError('termsError');
+    } else if (step === 8) {
+        if (!isInputChecked('payment')) { showError('paymentError', 'Escolha o pagamento.'); isValid = false; } else clearError('paymentError');
     }
-
     return isValid;
 }
 
-function showError(elementId: string, message: string) {
-    const errorElement = document.getElementById(elementId);
-    if (errorElement) {
-        errorElement.textContent = message;
-        errorElement.classList.add('active');
-    }
+function showError(id: string, msg: string) {
+    const el = document.getElementById(id);
+    if (el) { el.textContent = msg; el.classList.add('active'); }
 }
-
-function clearError(elementId: string) {
-    const errorElement = document.getElementById(elementId);
-    if (errorElement) {
-        errorElement.textContent = '';
-        errorElement.classList.remove('active');
-    }
+function clearError(id: string) {
+    const el = document.getElementById(id);
+    if (el) { el.textContent = ''; el.classList.remove('active'); }
 }
 
 function updateInstruments() {
-    const selectedFormation = (document.querySelector('input[name="formation"]:checked') as HTMLInputElement)?.value;
+    const formationCheckbox = document.querySelector('input[name="formation"]:checked') as HTMLInputElement | null;
+    const selectedFormation = formationCheckbox ? formationCheckbox.value : null;
     const container = document.getElementById('instrumentsContainer');
-
     if (!container || !selectedFormation) return;
-
+    const currentChecked = document.querySelector('input[name="instruments"]:checked') as HTMLInputElement | null;
+    const currentVal = currentChecked ? currentChecked.value : null;
     container.innerHTML = '';
-    const options = instrumentOptions[selectedFormation as keyof typeof instrumentOptions];
-
-    options.forEach(option => {
-        const label = document.createElement('label');
-        label.className = 'radio-option';
-        label.innerHTML = `
-            <input type="radio" name="instruments" value="${option}" required>
-            <span class="radio-label">${option}</span>
-        `;
-        container.appendChild(label);
-    });
-
-    document.getElementById('step-3-1')!.style.display = 'block';
+    const options = instrumentOptions[selectedFormation];
+    if (options) {
+        options.forEach(option => {
+            const label = document.createElement('label');
+            label.className = 'radio-option';
+            const checkedAttr = (currentVal === option) ? 'checked' : '';
+            label.innerHTML = `<input type="radio" name="instruments" value="${option}" required ${checkedAttr}><span class="radio-label">${option}</span>`;
+            container.appendChild(label);
+        });
+    }
 }
 
 function isValidCPF(cpf: string): boolean {
-    // Remove formatação
-    cpf = cpf.replace(/\D/g, '').trim();
-
-    // Verifica se tem 11 dígitos
-    if (cpf.length !== 11) return false;
-
-    // Verifica se não é uma sequência repetida (111.111.111-11, etc)
-    if (/^(\d)\1{10}$/.test(cpf)) return false;
-
-    // Valida primeiro dígito
+    cpf = cpf.replace(/\D/g, '');
+    if (cpf.length !== 11 || /^(\d)\1{10}$/.test(cpf)) return false;
     let sum = 0;
-    for (let i = 0; i < 9; i++) {
-        sum += parseInt(cpf[i]) * (10 - i);
-    }
-    let remainder = sum % 11;
-    let digit1 = remainder < 2 ? 0 : 11 - remainder;
-
-    if (parseInt(cpf[9]) !== digit1) return false;
-
-    // Valida segundo dígito
+    for (let i = 0; i < 9; i++) sum += parseInt(cpf[i]) * (10 - i);
+    let r = sum % 11;
+    let d1 = r < 2 ? 0 : 11 - r;
+    if (parseInt(cpf[9]) !== d1) return false;
     sum = 0;
-    for (let i = 0; i < 10; i++) {
-        sum += parseInt(cpf[i]) * (11 - i);
-    }
-    remainder = sum % 11;
-    let digit2 = remainder < 2 ? 0 : 11 - remainder;
-
-    return parseInt(cpf[10]) === digit2;
+    for (let i = 0; i < 10; i++) sum += parseInt(cpf[i]) * (11 - i);
+    r = sum % 11;
+    let d2 = r < 2 ? 0 : 11 - r;
+    return parseInt(cpf[10]) === d2;
 }
 
 function submitForm() {
-    const formData = collectFormData();
-    console.log('Dados do contrato:', formData);
-
-    showSuccessMessage();
-}
-
-function collectFormData() {
-    return {
-        email: (document.getElementById('email') as HTMLInputElement).value,
-        fullName: (document.getElementById('fullName') as HTMLInputElement).value,
-        cpf: (document.getElementById('cpf') as HTMLInputElement).value,
-        phone: (document.getElementById('phone') as HTMLInputElement).value,
-        eventDate: (document.getElementById('eventDate') as HTMLInputElement).value,
-        guestCount: (document.getElementById('guestCount') as HTMLInputElement).value,
-        formation: (document.querySelector('input[name="formation"]:checked') as HTMLInputElement)?.value,
-        instruments: (document.querySelector('input[name="instruments"]:checked') as HTMLInputElement)?.value,
-        trumpet: (document.querySelector('input[name="trumpet"]:checked') as HTMLInputElement)?.value,
-        sound: (document.querySelector('input[name="sound"]:checked') as HTMLInputElement)?.value,
-        payment: (document.querySelector('input[name="payment"]:checked') as HTMLInputElement)?.value,
-        finalObservations: (document.getElementById('finalObservations') as HTMLTextAreaElement).value
+    const formData = {
+        nome_completo: getInputValue('fullName'),
+        cpf: getInputValue('cpf'),
+        rg: getInputValue('rg'),
+        endereco_residencial: getInputValue('address'),
+        celular: getInputValue('phone'),
+        email: getInputValue('email'),
+        nome_casa: getInputValue('venueName'),
+        endereco_casa: getInputValue('venueAddress'),
+        data_evento: getInputValue('eventDate'),
+        horario_cerimonia: getInputValue('ceremonyStartTime'),
+        horario_convidados: getInputValue('guestArrivalTime'),
+        pacote: getCheckedValue('formation'),
+        trompete: getCheckedValue('trumpet'),
+        sonorizacao: getCheckedValue('sound'),
+        forma_pagamento: getCheckedValue('payment'),
+        instrumentos_escolhidos: getCheckedValue('instruments')
     };
+
+    // Mostrar overlay de carregamento
+    const loadingOverlay = document.getElementById('loadingOverlay');
+    const submitBtn = document.getElementById('submitBtn') as HTMLButtonElement | null;
+    if (loadingOverlay) loadingOverlay.style.display = 'flex';
+    if (submitBtn) submitBtn.disabled = true;
+
+    const scriptUrl = 'https://script.google.com/macros/s/AKfycby6IiBmy8plxmJ9rtyv6qhGVyDOkaH-LhYSUMlsSdpcz9gZpEU9zvb5EHLBstkB6Ok1BQ/exec';
+
+    fetch(scriptUrl, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+    })
+    .then(() => {
+        console.log('Dados enviados com sucesso:', formData);
+        setTimeout(() => {
+            if (loadingOverlay) loadingOverlay.style.display = 'none';
+            showSuccessMessage();
+        }, 1500);
+    })
+    .catch(error => {
+        console.error('Erro ao enviar dados:', error);
+        setTimeout(() => {
+            if (loadingOverlay) loadingOverlay.style.display = 'none';
+            showSuccessMessage();
+        }, 1500);
+    });
 }
 
 function showSuccessMessage() {
     const form = document.getElementById('contractForm');
-    if (form) {
-        form.style.display = 'none';
-    }
-
     const successMsg = document.getElementById('successMessage');
+    if (form) form.style.display = 'none';
     if (successMsg) {
         successMsg.style.display = 'block';
+        successMsg.scrollIntoView({ behavior: 'smooth' });
     }
+    const emailBar = document.getElementById('emailDisplayBar');
+    if (emailBar) emailBar.style.display = 'none';
 }
 
 function setupEmailModal() {
-    const emailModal = document.getElementById('emailModal');
-    const emailDisplayBar = document.getElementById('emailDisplayBar');
-    const emailInput = document.getElementById('email') as HTMLInputElement;
-    const editEmailBtn = document.getElementById('editEmailBtn');
-    const closeEmailModalBtn = document.getElementById('closeEmailModal');
-    const cancelEmailBtn = document.getElementById('cancelEmailBtn');
-    const confirmEmailBtn = document.getElementById('confirmEmailBtn');
-    const emailModalInput = document.getElementById('emailModalInput') as HTMLInputElement;
-    const displayedEmail = document.getElementById('displayedEmail');
-    const modalEmailError = document.getElementById('modalEmailError');
+    const modal = document.getElementById('emailModal');
+    const editBtn = document.getElementById('editEmailBtn');
+    const closeBtns = [document.getElementById('closeEmailModal'), document.getElementById('cancelEmailBtn')];
+    const confirmBtn = document.getElementById('confirmEmailBtn');
+    const emailInput = document.getElementById('email') as HTMLInputElement | null;
+    const modalInput = document.getElementById('emailModalInput') as HTMLInputElement | null;
+    const displayEmail = document.getElementById('displayedEmail');
+    const errorMsg = document.getElementById('modalEmailError');
 
-    // Abrir modal
-    editEmailBtn?.addEventListener('click', () => {
-        emailModalInput.value = emailInput.value;
-        modalEmailError!.textContent = '';
-        modalEmailError!.classList.remove('active');
-        emailModal!.style.display = 'flex';
+    if (editBtn) {
+        editBtn.addEventListener('click', () => {
+            if (modalInput) modalInput.value = emailInput ? emailInput.value : '';
+            if (errorMsg) { errorMsg.textContent = ''; errorMsg.classList.remove('active'); }
+            if (modal) modal.style.display = 'flex';
+        });
+    }
+    closeBtns.forEach(btn => {
+        if (btn) btn.addEventListener('click', () => { if (modal) modal.style.display = 'none'; });
     });
-
-    // Fechar modal (botão X)
-    closeEmailModalBtn?.addEventListener('click', () => {
-        emailModal!.style.display = 'none';
-    });
-
-    // Fechar modal (botão Cancelar)
-    cancelEmailBtn?.addEventListener('click', () => {
-        emailModal!.style.display = 'none';
-    });
-
-    // Fechar modal ao clicar fora
-    emailModal?.addEventListener('click', (e) => {
-        if (e.target === emailModal) {
-            emailModal.style.display = 'none';
-        }
-    });
-
-    // Confirmar alteração de email
-    confirmEmailBtn?.addEventListener('click', () => {
-        const newEmail = emailModalInput.value.trim();
-
-        if (!newEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newEmail)) {
-            modalEmailError!.textContent = 'Por favor, informe um email válido.';
-            modalEmailError!.classList.add('active');
-            return;
-        }
-
-        // Atualizar email
-        emailInput.value = newEmail;
-        displayedEmail!.textContent = newEmail;
-        emailModal!.style.display = 'none';
-
-        // Limpar erro
-        modalEmailError!.textContent = '';
-        modalEmailError!.classList.remove('active');
-    });
-
-    // Permitir confirmar com Enter
-    emailModalInput?.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-            confirmEmailBtn?.click();
-        }
-    });
+    if (confirmBtn) {
+        confirmBtn.addEventListener('click', () => {
+            const val = modalInput ? modalInput.value.trim() : '';
+            if (!val || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) {
+                if (errorMsg) { errorMsg.textContent = 'Email inválido.'; errorMsg.classList.add('active'); }
+                return;
+            }
+            if (emailInput) emailInput.value = val;
+            if (displayEmail) displayEmail.textContent = val;
+            if (modal) modal.style.display = 'none';
+        });
+    }
 }
 
 function updateEmailDisplay() {
-    const emailInput = document.getElementById('email') as HTMLInputElement;
+    const emailInput = document.getElementById('email') as HTMLInputElement | null;
     const displayedEmail = document.getElementById('displayedEmail');
-    if (displayedEmail && emailInput.value) {
-        displayedEmail.textContent = emailInput.value;
+    if (displayedEmail && emailInput) displayedEmail.textContent = emailInput.value;
+}
+
+function setupInputMasks() {
+    const cpfInput = document.getElementById('cpf') as HTMLInputElement | null;
+    if (cpfInput) {
+        cpfInput.addEventListener('input', (e) => {
+            const target = e.target as HTMLInputElement;
+            let v = target.value.replace(/\D/g, '');
+            if (v.length > 11) v = v.substring(0, 11);
+            if (v.length > 9) v = v.replace(/(\d{3})(\d{3})(\d{3})(\d{1,2})/, '$1.$2.$3-$4');
+            else if (v.length > 6) v = v.replace(/(\d{3})(\d{3})(\d{1,3})/, '$1.$2.$3');
+            else if (v.length > 3) v = v.replace(/(\d{3})(\d{1,3})/, '$1.$2');
+            target.value = v;
+        });
+    }
+    const phoneInput = document.getElementById('phone') as HTMLInputElement | null;
+    if (phoneInput) {
+        phoneInput.addEventListener('input', (e) => {
+            const target = e.target as HTMLInputElement;
+            let v = target.value.replace(/\D/g, '');
+            if (v.length > 11) v = v.substring(0, 11);
+            if (v.length > 10) v = v.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+            else if (v.length > 6) v = v.replace(/(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3');
+            else if (v.length > 2) v = v.replace(/(\d{2})(\d{0,5})/, '($1) $2');
+            target.value = v;
+        });
     }
 }
 </script>
