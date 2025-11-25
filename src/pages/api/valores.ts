@@ -1,8 +1,9 @@
 import type { APIRoute } from 'astro';
 
 interface Env {
-  baserow_token: string;
+  baserow_token?: string;
   BASEROW_API_TOKEN?: string;
+  [key: string]: any;
 }
 
 interface PricingData {
@@ -17,20 +18,33 @@ export const GET: APIRoute = async ({ request, locals }) => {
     // In development: from process.env
     let apiToken = '';
 
+    console.log('🔍 DEBUG: locals type:', typeof locals);
+    console.log('🔍 DEBUG: locals keys:', locals ? Object.keys(locals) : 'locals is null/undefined');
+
     // Try to get from Cloudflare context (production)
-    if (typeof locals !== 'undefined' && locals && 'runtime' in locals) {
-      // Try both possible names for the token variable
-      apiToken = (locals.runtime.env as Env).baserow_token || (locals.runtime.env as Env).BASEROW_API_TOKEN || '';
+    if (locals && typeof locals === 'object') {
+      console.log('🔍 DEBUG: Checking locals.runtime:', 'runtime' in locals);
+
+      if ('runtime' in locals && locals.runtime) {
+        const env = locals.runtime.env as Env;
+        console.log('🔍 DEBUG: runtime.env keys:', Object.keys(env || {}));
+        apiToken = env?.baserow_token || env?.BASEROW_API_TOKEN || '';
+      }
     }
 
     // Fallback to process.env (development local)
     if (!apiToken) {
+      console.log('🔍 DEBUG: Falling back to process.env');
+      console.log('🔍 DEBUG: process.env keys containing "BASEROW" or "baserow":',
+        Object.keys(process.env).filter(k => k.toLowerCase().includes('baserow')));
       apiToken = process.env.baserow_token || process.env.BASEROW_API_TOKEN || '';
     }
 
     console.log('🔐 Token check: ', apiToken ? `Found (${apiToken.substring(0, 10)}...)` : 'Not found');
     console.log('🔑 Token length:', apiToken.length);
-    console.log('🔑 Token ends with:', JSON.stringify(apiToken.slice(-5)));
+    if (apiToken) {
+      console.log('🔑 Token ends with:', JSON.stringify(apiToken.slice(-5)));
+    }
 
     if (!apiToken) {
       console.error('BASEROW_API_TOKEN not found in environment variables');
@@ -57,16 +71,27 @@ export const GET: APIRoute = async ({ request, locals }) => {
         method: 'GET',
         headers: {
           'Authorization': `Token ${cleanToken}`,
-          'Content-Type': 'application/json',
         },
       }
     );
 
     if (!packageSampleResponse.ok) {
+      const errorText = await packageSampleResponse.text();
+      console.error('Package sample API error response:', errorText);
       throw new Error(`Package sample API error: ${packageSampleResponse.statusText}`);
     }
 
-    const packageSampleResult = await packageSampleResponse.json();
+    const packageSampleContentType = packageSampleResponse.headers.get('content-type');
+    console.log('📦 Package sample content-type:', packageSampleContentType);
+
+    let packageSampleResult;
+    try {
+      packageSampleResult = await packageSampleResponse.json();
+    } catch (parseError) {
+      const bodyText = await packageSampleResponse.text();
+      console.error('Failed to parse package sample response:', bodyText.substring(0, 500));
+      throw new Error(`Failed to parse package sample response: ${parseError}`);
+    }
     const packageSampleData: { [key: string]: any } = {};
 
     // Map package sample data by ID for easy lookup
@@ -81,16 +106,27 @@ export const GET: APIRoute = async ({ request, locals }) => {
         method: 'GET',
         headers: {
           'Authorization': `Token ${cleanToken}`,
-          'Content-Type': 'application/json',
         },
       }
     );
 
     if (!pricingResponse.ok) {
+      const errorText = await pricingResponse.text();
+      console.error('Pricing API error response:', errorText);
       throw new Error(`Pricing API error: ${pricingResponse.statusText}`);
     }
 
-    const pricingResult = await pricingResponse.json();
+    const pricingContentType = pricingResponse.headers.get('content-type');
+    console.log('💰 Pricing content-type:', pricingContentType);
+
+    let pricingResult;
+    try {
+      pricingResult = await pricingResponse.json();
+    } catch (parseError) {
+      const bodyText = await pricingResponse.text();
+      console.error('Failed to parse pricing response:', bodyText.substring(0, 500));
+      throw new Error(`Failed to parse pricing response: ${parseError}`);
+    }
     let pricingData: PricingData[] = pricingResult.results || [];
 
     console.log('📊 Package sample data loaded:', Object.keys(packageSampleData).length, 'items');
