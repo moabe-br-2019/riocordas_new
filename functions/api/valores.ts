@@ -1,5 +1,6 @@
 interface Env {
   BASEROW_API_TOKEN: string;
+  baserow_token?: string;
 }
 
 interface PricingData {
@@ -9,21 +10,15 @@ interface PricingData {
 
 export async function onRequestGet(context: { request: Request; env: Env }) {
   try {
-    const apiToken = context.env.BASEROW_API_TOKEN;
+    const apiToken = context.env.baserow_token || context.env.BASEROW_API_TOKEN;
 
     if (!apiToken) {
-      console.error('BASEROW_API_TOKEN not found in environment variables');
-      return new Response(
-        JSON.stringify({ error: 'Configuração do servidor incorreta' }),
-        {
-          status: 500,
-          headers: {
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*',
-          },
-        }
-      );
-    }
+    console.error('baserow_token/BASEROW_API_TOKEN not found in environment variables');
+    return new Response(JSON.stringify({ error: 'Configuração do servidor incorreta' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+    });
+  }
 
     // First request: Get package sample data with images from table 258305
     const packageSampleResponse = await fetch(
