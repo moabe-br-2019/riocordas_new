@@ -1,4 +1,5 @@
 import type { APIRoute } from 'astro';
+import { getRuntime } from '@astrojs/cloudflare/runtime';
 
 interface Env {
   baserow_token?: string;
@@ -14,25 +15,22 @@ interface PricingData {
 export const GET: APIRoute = async ({ request, locals }) => {
   try {
     // Get the token from environment
-    // In production (Cloudflare Workers): from locals.runtime.env
-    // In development: from process.env
+    // In production (Cloudflare Pages): use getRuntime() to access environment variables
+    // In development: fallback to process.env
     let apiToken = '';
 
-    console.log('🔍 DEBUG: locals type:', typeof locals);
-    console.log('🔍 DEBUG: locals keys:', locals ? Object.keys(locals) : 'locals is null/undefined');
-
-    // Try to get from Cloudflare context (production)
-    if (locals && typeof locals === 'object') {
-      console.log('🔍 DEBUG: Checking locals.runtime:', 'runtime' in locals);
-
-      if ('runtime' in locals && locals.runtime) {
-        const env = locals.runtime.env as Env;
-        console.log('🔍 DEBUG: runtime.env keys:', Object.keys(env || {}));
-        apiToken = env?.baserow_token || env?.BASEROW_API_TOKEN || '';
-      }
+    console.log('🔍 DEBUG: Attempting to get runtime via getRuntime()');
+    try {
+      const runtime = getRuntime(locals);
+      console.log('🔍 DEBUG: getRuntime() succeeded');
+      console.log('🔍 DEBUG: runtime.env keys:', Object.keys(runtime.env || {}));
+      const env = runtime.env as Env;
+      apiToken = env?.baserow_token || env?.BASEROW_API_TOKEN || '';
+    } catch (runtimeError) {
+      console.log('🔍 DEBUG: getRuntime() failed:', runtimeError instanceof Error ? runtimeError.message : String(runtimeError));
     }
 
-    // Fallback to process.env (development local)
+    // Fallback to process.env if runtime didn't work (development local)
     if (!apiToken) {
       console.log('🔍 DEBUG: Falling back to process.env');
       console.log('🔍 DEBUG: process.env keys containing "BASEROW" or "baserow":',
