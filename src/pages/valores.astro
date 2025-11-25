@@ -1,4 +1,8 @@
 ---
+// Esta página deve ser renderizada no servidor (SSR) para acessar a API em tempo real
+// Desabilita pre-rendering para que a API seja chamada dinâmicamente
+export const prerender = false;
+
 import Layout from '../layouts/Layout.astro';
 
 interface PackageSample {
@@ -22,6 +26,7 @@ interface PricingItem {
 interface ApiResponse {
   success: boolean;
   pricing: PricingItem[];
+  package?: any;
   error?: string;
   message?: string;
 }
@@ -34,17 +39,30 @@ const selectedYear = yearParam ? parseInt(yearParam) : currentYear;
 
 let pricingData: any[] = [];
 let allPricingData: any[] = [];
-let packageData: any = null;
 let error = '';
 let availableYears: number[] = [];
 
 try {
-  // Buscar dados da API (funciona tanto em dev quanto em produção)
-  const siteUrl = import.meta.env.SITE || 'https://riocordas.com.br';
-  const apiUrl = new URL('/api/valores', siteUrl).href;
+  // Buscar dados da API
+  // Durante SSR em desenvolvimento: usa localhost
+  // Durante SSR em produção: usa a URL do site
+  let apiUrl: string;
+
+  // Detecta se está em desenvolvimento (SSR local) ou produção
+  const isDev = process.env.NODE_ENV !== 'production';
+
+  if (isDev) {
+    // Em desenvolvimento, sempre usa localhost para SSR funcionar
+    // Nota: durante SSR, o Astro roda em um servidor Node local
+    apiUrl = 'http://localhost:4330/api/valores';
+  } else {
+    // Em produção, usa a URL do site configurada
+    const siteUrl = import.meta.env.SITE || 'https://riocordas.com.br';
+    apiUrl = new URL('/api/valores', siteUrl).href;
+  }
 
   console.log('📌 Fetching pricing data from:', apiUrl);
-  const apiResponse = await fetch(apiUrl);
+  let apiResponse = await fetch(apiUrl);
 
   if (!apiResponse.ok) {
     const errorText = await apiResponse.text();
@@ -63,8 +81,7 @@ try {
 
   if (data.success) {
     allPricingData = data.pricing || [];
-    packageData = data.package || null;
-    console.log('✅ Data loaded successfully. Years available:', [...new Set(allPricingData.map((item: PricingData) => item.year))]);
+    console.log('✅ Data loaded successfully. Years available:', [...new Set(allPricingData.map((item: PricingItem) => item.year))]);
   } else {
     error = data.message || data.error || 'Unknown error occurred';
     console.error('API returned error:', error);
@@ -76,14 +93,28 @@ try {
 
 // Extrair anos disponíveis e filtrar pelos dados do ano selecionado
 if (allPricingData.length > 0) {
-  availableYears = [...new Set(allPricingData.map((item: PricingItem) => item.year))].sort((a, b) => a - b);
-  pricingData = allPricingData.filter((item: PricingItem) => item.year === selectedYear);
+  // Converter "Ano" string para number para comparação correta
+  const yearsSet = new Set<number>();
+  allPricingData.forEach((item: any) => {
+    const year = parseInt(item.Ano || item.year || '0');
+    if (year > 0) yearsSet.add(year);
+  });
+  availableYears = Array.from(yearsSet).sort((a, b) => a - b);
+
+  // Filtrar pelo ano selecionado
+  pricingData = allPricingData.filter((item: any) => {
+    const itemYear = parseInt(item.Ano || item.year || '0');
+    return itemYear === selectedYear;
+  });
 
   // Se não houver dados para o ano selecionado, usar o ano mais recente
   if (pricingData.length === 0 && availableYears.length > 0) {
     const latestYear = availableYears[availableYears.length - 1];
     console.log(`ℹ️ No data for year ${selectedYear}, showing latest year ${latestYear}`);
-    pricingData = allPricingData.filter((item: PricingItem) => item.year === latestYear);
+    pricingData = allPricingData.filter((item: any) => {
+      const itemYear = parseInt(item.Ano || item.year || '0');
+      return itemYear === latestYear;
+    });
   }
 }
 ---
@@ -108,64 +139,55 @@ if (allPricingData.length > 0) {
       </div>
     )}
 
-    {availableYears.length > 0 && (
-      <div class="year-filter">
-        <p class="filter-label">Filtrar por Ano:</p>
-        <div class="year-buttons">
-          {availableYears.map((year) => (
-            <a
-              href={`/valores?ano=${year}`}
-              class={`year-btn ${selectedYear === year ? 'active' : ''}`}
-            >
-              {year}
-            </a>
-          ))}
-        </div>
-      </div>
-    )}
 
     {!error && pricingData.length > 0 && (
       <div class="pricing-section">
-        <h2>Valores - Ano {pricingData[0]?.year || selectedYear}</h2>
+        <h2>Valores - Ano {selectedYear}</h2>
         <div class="cards-grid">
-          {pricingData.map((pricingItem: PricingItem) => (
-            <div class="pricing-card">
-              {pricingItem.packageSample?.image && (
+          {pricingData.map((pricingItem: any) => {
+            // Extrair dados do pacote de amostra
+            const packageData = pricingItem.packageSample;
+
+            // Preços
+            const priceRegular = pricingItem['Preço'] || pricingItem.Preço || '0';
+            const pricePromo = pricingItem['Preço promocional'] || pricingItem['Preço promocional'];
+
+            // Extrair URL da imagem (usa a versão original em alta qualidade)
+            const imageUrl = packageData?.File?.[0]?.url || '/placeholder.jpg';
+            const packageName = packageData?.Name || 'Pacote';
+            const packageNotes = packageData?.Notes || '';
+
+            return (
+              <div class="pricing-card">
                 <div class="card-image">
                   <img
-                    src={pricingItem.packageSample.image.url || pricingItem.packageSample.image}
-                    alt={pricingItem.packageSample.name || 'Pacote'}
+                    src={imageUrl}
+                    alt={packageName}
                   />
                 </div>
-              )}
-              <div class="card-header">
-                <h3>{pricingItem.packageSample?.name || 'Pacote'}</h3>
-              </div>
-              <div class="card-body">
-                <div class="formations-list">
-                  <div class="formation-item">
-                    <span class="formation-name">Dueto</span>
-                    <span class="formation-price">{pricingItem.dueto}</span>
+
+                <div class="card-content">
+                  <h3 class="card-title">{packageName}</h3>
+
+                  {packageNotes && (
+                    <p class="card-description">{packageNotes}</p>
+                  )}
+
+                  <div class="card-price">
+                    <div class="price-main">
+                      <span class="price-label">A partir de</span>
+                      <span class="price-value">R$ {pricePromo || priceRegular}</span>
+                    </div>
+                    {pricePromo && (
+                      <div class="price-crossed">R$ {priceRegular}</div>
+                    )}
                   </div>
-                  <div class="formation-item">
-                    <span class="formation-name">Trio</span>
-                    <span class="formation-price">{pricingItem.trio}</span>
-                  </div>
-                  <div class="formation-item">
-                    <span class="formation-name">Quarteto</span>
-                    <span class="formation-price">{pricingItem.quarteto}</span>
-                  </div>
-                  <div class="formation-item">
-                    <span class="formation-name">Quinteto</span>
-                    <span class="formation-price">{pricingItem.quinteto}</span>
-                  </div>
+
+                  <a href="/formulario-contrato" class="btn-contact">Solicitar Orçamento</a>
                 </div>
               </div>
-              <div class="card-footer">
-                <a href="/formulario-contrato" class="btn-contact">Contratar Agora</a>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     )}
@@ -186,77 +208,32 @@ if (allPricingData.length > 0) {
     max-width: 1200px;
     margin: 0 auto;
     padding: 60px 20px;
-    background-color: #f9f9f9;
+    background-color: #ffffff;
     min-height: 80vh;
   }
 
   .valores-header {
     text-align: center;
-    margin-bottom: 50px;
+    margin-bottom: 60px;
   }
 
   .valores-header h1 {
     font-family: 'Playfair Display', serif;
-    font-size: 36px;
-    color: #333;
-    margin-bottom: 10px;
+    font-size: 48px;
+    color: #1a1a1a;
+    margin-bottom: 15px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
   }
 
   .subtitle {
-    font-size: 16px;
-    color: #666;
+    font-size: 18px;
+    color: #666666;
     margin: 0;
+    font-weight: 400;
+    line-height: 1.6;
   }
 
-  .year-filter {
-    background-color: white;
-    border-radius: 8px;
-    padding: 30px;
-    margin-bottom: 40px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    text-align: center;
-  }
-
-  .filter-label {
-    font-size: 16px;
-    font-weight: 600;
-    color: #333;
-    margin-bottom: 15px;
-  }
-
-  .year-buttons {
-    display: flex;
-    gap: 12px;
-    justify-content: center;
-    flex-wrap: wrap;
-  }
-
-  .year-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 10px 20px;
-    border-radius: 4px;
-    background-color: #f0f0f0;
-    color: #333;
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 14px;
-    border: 2px solid transparent;
-    transition: all 0.3s ease;
-    cursor: pointer;
-  }
-
-  .year-btn:hover {
-    background-color: #e0e0e0;
-    transform: translateY(-2px);
-  }
-
-  .year-btn.active {
-    background-color: var(--accent-color);
-    color: white;
-    border-color: var(--accent-color);
-  }
 
   .pricing-section {
     background-color: transparent;
@@ -267,140 +244,155 @@ if (allPricingData.length > 0) {
 
   .pricing-section h2 {
     font-family: 'Playfair Display', serif;
-    font-size: 28px;
-    color: #333;
-    margin-bottom: 40px;
+    font-size: 32px;
+    color: #1a1a1a;
+    margin-bottom: 50px;
     text-align: center;
     border: none;
     padding: 0;
+    font-weight: 700;
   }
 
   .cards-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 30px;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 40px;
   }
 
   .pricing-card {
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    background-color: #ffffff;
+    border-radius: 0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
     overflow: hidden;
     transition: all 0.3s ease;
     display: flex;
     flex-direction: column;
     height: 100%;
+    border: 1px solid #e0e0e0;
   }
 
   .pricing-card:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    transform: translateY(-8px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
   }
 
   .card-image {
     width: 100%;
-    height: 250px;
+    height: 320px;
     overflow: hidden;
-    background-color: #f5f5f5;
+    background-color: #f0f0f0;
   }
 
   .card-image img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    transition: transform 0.3s ease;
   }
 
-  .card-header {
-    background: linear-gradient(135deg, var(--accent-color), #ff6b35);
-    color: white;
-    padding: 20px;
-    text-align: center;
+  .pricing-card:hover .card-image img {
+    transform: scale(1.05);
   }
 
-  .card-header h3 {
-    font-family: 'Playfair Display', serif;
-    font-size: 24px;
-    margin: 0;
-  }
-
-  .card-body {
-    padding: 25px 20px;
+  .card-content {
+    padding: 30px;
     flex-grow: 1;
-  }
-
-  .formations-list {
     display: flex;
     flex-direction: column;
-    gap: 15px;
-  }
-
-  .formation-item {
-    display: flex;
     justify-content: space-between;
-    align-items: center;
-    padding: 12px;
-    background-color: #f9f9f9;
-    border-radius: 4px;
-    border-left: 3px solid var(--accent-color);
   }
 
-  .formation-name {
-    font-size: 14px;
-    font-weight: 600;
-    color: #333;
-  }
-
-  .formation-price {
-    font-size: 16px;
+  .card-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    color: #1a1a1a;
+    margin: 0 0 15px 0;
     font-weight: 700;
-    color: var(--accent-color);
   }
 
-  .card-footer {
-    padding: 20px;
-    background-color: #f9f9f9;
+  .card-description {
+    font-size: 14px;
+    color: #666666;
+    margin: 0 0 25px 0;
+    line-height: 1.6;
+  }
+
+  .card-price {
+    margin-bottom: 25px;
+    padding-top: 20px;
     border-top: 1px solid #e0e0e0;
+  }
+
+  .price-main {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .price-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: #999999;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .price-value {
+    font-size: 28px;
+    font-weight: 700;
+    color: #e65100;
+  }
+
+  .price-crossed {
+    font-size: 14px;
+    color: #999999;
+    text-decoration: line-through;
   }
 
   .btn-contact {
     display: block;
     width: 100%;
-    padding: 12px 20px;
-    background-color: var(--accent-color);
+    padding: 14px 20px;
+    background-color: #e65100;
     color: white;
     text-decoration: none;
     text-align: center;
     font-weight: 600;
-    border-radius: 4px;
+    border-radius: 0;
     transition: all 0.3s ease;
     font-size: 14px;
+    border: none;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
   }
 
   .btn-contact:hover {
     background-color: #d93600;
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(242, 60, 0, 0.3);
   }
 
   .error-message {
     background-color: #ffe5e5;
     border-left: 4px solid #ff3b30;
     padding: 20px;
-    border-radius: 4px;
+    border-radius: 0;
     margin-bottom: 30px;
     color: #c41c00;
   }
 
   .error-message p {
     margin: 0;
+    font-size: 14px;
   }
 
   .no-data-message {
     text-align: center;
     padding: 60px 20px;
-    background-color: white;
-    border-radius: 8px;
-    color: #999;
+    background-color: #f5f5f5;
+    border-radius: 0;
+    color: #999999;
   }
 
   .no-data-message p {
@@ -409,7 +401,7 @@ if (allPricingData.length > 0) {
   }
 
   .suggestion {
-    color: #666;
+    color: #666666;
     font-size: 14px !important;
   }
 
@@ -419,34 +411,37 @@ if (allPricingData.length > 0) {
     }
 
     .valores-header h1 {
-      font-size: 28px;
+      font-size: 36px;
+    }
+
+    .valores-header {
+      margin-bottom: 40px;
     }
 
     .pricing-section h2 {
-      font-size: 24px;
-      margin-bottom: 30px;
+      font-size: 26px;
+      margin-bottom: 35px;
     }
 
     .cards-grid {
       grid-template-columns: 1fr;
-      gap: 20px;
+      gap: 30px;
     }
 
-    .year-buttons {
-      gap: 8px;
+    .card-content {
+      padding: 20px;
     }
 
-    .year-btn {
-      padding: 8px 16px;
-      font-size: 13px;
-    }
-
-    .card-header h3 {
+    .card-title {
       font-size: 20px;
     }
 
-    .price {
-      font-size: 28px;
+    .card-image {
+      height: 250px;
+    }
+
+    .price-value {
+      font-size: 24px;
     }
   }
 </style>

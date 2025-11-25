@@ -4,6 +4,7 @@
   "version": "0.0.1",
   "scripts": {
     "dev": "astro dev",
+    "dev:local": "BASEROW_API_TOKEN=$(cat .env.local | grep BASEROW_API_TOKEN | cut -d '=' -f2) astro dev",
     "start": "astro dev",
     "build": "astro build",
     "build:check": "astro check && astro build",
@@ -11,6 +12,7 @@
     "astro": "astro"
   },
   "dependencies": {
+    "@astrojs/cloudflare": "^8.1.0",
     "astro": "^4.16.18"
   },
   "devDependencies": {

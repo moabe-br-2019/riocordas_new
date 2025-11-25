@@ -1,3 +1,5 @@
+import type { APIRoute } from 'astro';
+
 interface Env {
   BASEROW_API_TOKEN: string;
 }
@@ -7,9 +9,26 @@ interface PricingData {
   [key: string]: any;
 }
 
-export async function onRequestGet(context: { request: Request; env: Env }) {
+export const GET: APIRoute = async ({ request, locals }) => {
   try {
-    const apiToken = context.env.BASEROW_API_TOKEN;
+    // Get the token from environment
+    // In production (Cloudflare Workers): from locals.runtime.env
+    // In development: from process.env
+    let apiToken = '';
+
+    // Try to get from Cloudflare context (production)
+    if (typeof locals !== 'undefined' && locals && 'runtime' in locals) {
+      apiToken = (locals.runtime.env as Env).BASEROW_API_TOKEN;
+    }
+
+    // Fallback to process.env (development local)
+    if (!apiToken) {
+      apiToken = process.env.BASEROW_API_TOKEN || '';
+    }
+
+    console.log('🔐 Token check: ', apiToken ? `Found (${apiToken.substring(0, 10)}...)` : 'Not found');
+    console.log('🔑 Token length:', apiToken.length);
+    console.log('🔑 Token ends with:', JSON.stringify(apiToken.slice(-5)));
 
     if (!apiToken) {
       console.error('BASEROW_API_TOKEN not found in environment variables');
@@ -25,13 +44,17 @@ export async function onRequestGet(context: { request: Request; env: Env }) {
       );
     }
 
+    // Trim whitespace from token
+    const cleanToken = apiToken.trim();
+    console.log('🧹 Clean token:', cleanToken.substring(0, 10) + '...');
+
     // First request: Get package sample data with images from table 258305
     const packageSampleResponse = await fetch(
       'https://api.baserow.io/api/database/rows/table/258305/?user_field_names=true',
       {
         method: 'GET',
         headers: {
-          'Authorization': `Token ${apiToken}`,
+          'Authorization': `Token ${cleanToken}`,
           'Content-Type': 'application/json',
         },
       }
@@ -55,7 +78,7 @@ export async function onRequestGet(context: { request: Request; env: Env }) {
       {
         method: 'GET',
         headers: {
-          'Authorization': `Token ${apiToken}`,
+          'Authorization': `Token ${cleanToken}`,
           'Content-Type': 'application/json',
         },
       }
@@ -93,13 +116,17 @@ export async function onRequestGet(context: { request: Request; env: Env }) {
       let packageSample = null;
 
       // Try different possible field names for the package sample relationship
-      const packageRelation = pricing.packageSample || pricing['package_sample'] || pricing.package || null;
+      const packageRelation = pricing['Pacote Sample'] || pricing.packageSample || pricing['package_sample'] || pricing.package || null;
 
       if (packageRelation) {
         // If it's an array (Baserow may return related records as arrays), get the first item
-        const packageId = Array.isArray(packageRelation) ? packageRelation[0] : packageRelation;
-        // If it's a number/string ID, look it up; if it's already an object, use it directly
-        packageSample = typeof packageId === 'object' ? packageId : packageSampleData[packageId];
+        const packageItem = Array.isArray(packageRelation) ? packageRelation[0] : packageRelation;
+
+        // Extract the ID from the relationship object if it has an 'id' field
+        const packageId = packageItem?.id || packageItem;
+
+        // Look up the full package data from packageSampleData
+        packageSample = packageSampleData[packageId] || null;
       }
 
       return {
@@ -144,10 +171,10 @@ export async function onRequestGet(context: { request: Request; env: Env }) {
       }
     );
   }
-}
+};
 
 // Handle OPTIONS request for CORS preflight
-export async function onRequestOptions() {
+export const OPTIONS: APIRoute = async () => {
   return new Response(null, {
     status: 204,
     headers: {
@@ -156,4 +183,4 @@ export async function onRequestOptions() {
       'Access-Control-Allow-Headers': 'Content-Type',
     },
   });
-}
+};
