@@ -71,6 +71,7 @@ export const GET: APIRoute = async ({ locals }) => {
         method: 'GET',
         headers: {
           'Authorization': `Token ${cleanToken}`,
+          'Content-Type': 'application/json',
           'Accept': 'application/json',
           'Accept-Encoding': 'gzip, deflate, br',
         },
@@ -108,6 +109,7 @@ export const GET: APIRoute = async ({ locals }) => {
         method: 'GET',
         headers: {
           'Authorization': `Token ${cleanToken}`,
+          'Content-Type': 'application/json',
           'Accept': 'application/json',
           'Accept-Encoding': 'gzip, deflate, br',
         },
