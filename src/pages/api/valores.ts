@@ -11,7 +11,7 @@ interface PricingData {
   [key: string]: any;
 }
 
-export const GET: APIRoute = async ({ request, locals }) => {
+export const GET: APIRoute = async ({ locals }) => {
   try {
     // Get the token from environment
     // In production (Cloudflare Pages): from locals.runtime.env
@@ -27,7 +27,8 @@ export const GET: APIRoute = async ({ request, locals }) => {
       if (runtime && 'env' in runtime) {
         console.log('🔍 DEBUG: runtime.env exists, keys:', Object.keys(runtime.env || {}));
         const env = runtime.env as Env;
-        apiToken = env?.baserow_token || env?.BASEROW_API_TOKEN || '';
+        // Try BASEROW_API_TOKEN first (standard), then baserow_token (lowercase)
+        apiToken = env?.BASEROW_API_TOKEN || env?.baserow_token || '';
       }
     }
 
@@ -36,7 +37,7 @@ export const GET: APIRoute = async ({ request, locals }) => {
       console.log('🔍 DEBUG: Falling back to process.env');
       console.log('🔍 DEBUG: process.env keys containing "BASEROW" or "baserow":',
         Object.keys(process.env).filter(k => k.toLowerCase().includes('baserow')));
-      apiToken = process.env.baserow_token || process.env.BASEROW_API_TOKEN || '';
+      apiToken = process.env.BASEROW_API_TOKEN || process.env.baserow_token || '';
     }
 
     console.log('🔐 Token check: ', apiToken ? `Found (${apiToken.substring(0, 10)}...)` : 'Not found');
