@@ -2,6 +2,9 @@
 import Layout from '../layouts/Layout.astro';
 // Footer removido conforme solicitado
 import { CONTRACT_CLAUSES } from '../data/contractClauses';
+
+const recaptchaSiteKey =
+  import.meta.env.PUBLIC_RECAPTCHA_SITE_KEY || '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI';
 ---
 
 <Layout
@@ -61,8 +64,7 @@ import { CONTRACT_CLAUSES } from '../data/contractClauses';
                     </div>
                     <div class="form-group">
                         <label>Captcha*</label>
-                        <!-- Substitua pelo sitekey real -->
-                        <div class="g-recaptcha" data-sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"></div>
+                        <div class="g-recaptcha" data-sitekey={recaptchaSiteKey}></div>
                         <div class="error-message" id="captchaError"></div>
                     </div>
                 </div>
