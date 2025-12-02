@@ -3,7 +3,7 @@ title: "Cronograma de Casamento: Quando Contratar Cada Fornecedor"
 description: "Descubra o cronograma ideal para planejar seu casamento sem stress. Saiba quando contratar cada fornecedor, incluindo a música da cerimônia."
 pubDate: 2025-12-02
 author: "Grupo Rio Cordas"
-image: "/images/blog/cronograma-casamento-quando-contratar-fornecedores.jpg"
+image: "https://pub-4e9b4808180243fe9efbc3ce3494c770.r2.dev/1764675135706-387103.png"
 tags: ["planejamento de casamento","cronograma casamento","música para casamento","organização casamento"]
 draft: false
 ---
