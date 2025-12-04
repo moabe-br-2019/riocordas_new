@@ -245,7 +245,7 @@ const googleScriptUrl =
                     <div class="error-message" id="paymentError"></div>
                 </div>
 
-                <!-- ETAPA 9: Resumo de Valores -->
+                <!-- ETAPA 9: Resumo de Valores e Considerações Finais -->
                 <div class="form-step" id="step-9" style="display: none;">
                     <h2>Resumo de Valores</h2>
                     <p class="form-description">Confira os valores do seu contrato:</p>
@@ -267,12 +267,9 @@ const googleScriptUrl =
                             <!-- Preenchido dinamicamente com parcelas -->
                         </div>
                     </div>
-                </div>
 
-                <!-- ETAPA 10: Considerações Finais -->
-                <div class="form-step" id="step-10" style="display: none;">
-                    <h2>Considerações Finais</h2>
-                    <div class="form-group">
+                    <div class="form-group" style="margin-top: 30px;">
+                        <h3 style="font-family: 'Playfair Display', serif; font-size: 20px; color: #333; margin-bottom: 15px;">Considerações Finais</h3>
                         <label for="finalObservations">Perguntas, dúvidas ou solicitações especiais:</label>
                         <textarea id="finalObservations" name="finalObservations" placeholder="Deixe aqui qualquer pergunta, dúvida sobre as cláusulas ou qualquer outra solicitação..."></textarea>
                     </div>
@@ -442,33 +439,44 @@ const googleScriptUrl =
         width: 100%;
         border-collapse: collapse;
         margin-bottom: 20px;
+        background-color: white;
+        border-radius: 6px;
+        overflow: hidden;
     }
 
     .pricing-table tbody tr {
         border-bottom: 1px solid #e0e0e0;
     }
 
+    .pricing-table tbody tr:last-child {
+        border-bottom: none;
+    }
+
     .pricing-table td {
-        padding: 12px 0;
+        padding: 15px 20px;
+        font-size: 15px;
     }
 
     .pricing-table td:first-child {
-        color: #666;
+        color: #555;
+        font-weight: 500;
     }
 
     .pricing-table td:last-child {
         text-align: right;
         font-weight: 600;
         color: #333;
+        white-space: nowrap;
     }
 
     .total-row {
         border-top: 2px solid var(--accent-color) !important;
         font-size: 18px;
+        background-color: #fff9f5;
     }
 
     .total-row td {
-        padding: 15px 0 !important;
+        padding: 18px 20px !important;
         color: var(--accent-color) !important;
     }
 
@@ -484,17 +492,32 @@ const googleScriptUrl =
         font-size: 18px;
         color: #333;
         margin-bottom: 15px;
+        margin-top: 0;
     }
 
     .payment-summary .installment {
         display: flex;
         justify-content: space-between;
-        padding: 10px 0;
+        align-items: center;
+        padding: 12px 0;
         border-bottom: 1px dashed #e0e0e0;
     }
 
     .payment-summary .installment:last-child {
         border-bottom: none;
+    }
+
+    .payment-summary .installment span {
+        font-size: 15px;
+    }
+
+    .payment-summary .installment span:first-child {
+        color: #666;
+    }
+
+    .payment-summary .installment strong {
+        color: #333;
+        font-size: 16px;
     }
 
     @media (max-width: 768px) { .form-row { grid-template-columns: 1fr; gap: 0; } .form-header { padding: 30px 20px; } .form-header h1 { font-size: 24px; } .contract-form { padding: 25px 20px; } .form-navigation { flex-direction: column; } .btn-primary, .btn-secondary, .btn-submit { padding: 12px 20px; font-size: 14px; } }
@@ -532,7 +555,7 @@ interface PricingItem {
 }
 
 let currentStep: number = 0;
-const totalSteps: number = 11; // Atualizado de 10 para 11 (novo step de resumo)
+const totalSteps: number = 10; // Total de steps no formulário
 let pricingData: PricingItem[] = [];
 let eventYear: number | null = null;
 
@@ -683,8 +706,8 @@ function showStep(step: number) {
         const submitBtn = document.getElementById('submitBtn');
 
         if (prevBtn) prevBtn.style.display = step > 0 ? 'block' : 'none';
-        if (submitBtn) submitBtn.style.display = step === 10 ? 'block' : 'none';
-        if (nextBtn) nextBtn.style.display = step !== 10 ? 'block' : 'none';
+        if (submitBtn) submitBtn.style.display = step === 9 ? 'block' : 'none';
+        if (nextBtn) nextBtn.style.display = step !== 9 ? 'block' : 'none';
 
         document.querySelector('.contract-form')?.scrollIntoView({ behavior: 'smooth' });
     }, 300);
@@ -802,9 +825,28 @@ function updateSoundOptions() {
 
     container.innerHTML = '';
 
-    // Buscar opções de sonorização nos dados
-    const sound1 = pricingData.find(p => p['Pacote Sample']?.includes('Sonorização 1'));
-    const sound2 = pricingData.find(p => p['Pacote Sample']?.includes('Sonorização 2'));
+    // Buscar opções de sonorização nos dados usando a mesma lógica do getPriceByName
+    const sound1 = pricingData.find(p => {
+        const pacoteSample = p['Pacote Sample'];
+        if (Array.isArray(pacoteSample)) {
+            return pacoteSample.some(pkg => pkg.value?.toLowerCase().includes('sonorização 1'));
+        }
+        if (typeof pacoteSample === 'string') {
+            return pacoteSample.toLowerCase().includes('sonorização 1');
+        }
+        return false;
+    });
+
+    const sound2 = pricingData.find(p => {
+        const pacoteSample = p['Pacote Sample'];
+        if (Array.isArray(pacoteSample)) {
+            return pacoteSample.some(pkg => pkg.value?.toLowerCase().includes('sonorização 2'));
+        }
+        if (typeof pacoteSample === 'string') {
+            return pacoteSample.toLowerCase().includes('sonorização 2');
+        }
+        return false;
+    });
 
     // Opção: Nenhuma sonorização
     const noneOption = document.createElement('label');
@@ -817,7 +859,11 @@ function updateSoundOptions() {
 
     // Opção: Sonorização 1
     if (sound1) {
-        const price1 = sound1['Preço promocional'] || sound1['Preço'];
+        const precoPromo1 = sound1['Preço promocional'];
+        const price1 = typeof precoPromo1 === 'string'
+            ? parseFloat(precoPromo1)
+            : (typeof precoPromo1 === 'number' ? precoPromo1 : 0);
+
         const option1 = document.createElement('label');
         option1.className = 'radio-option';
         option1.innerHTML = `
@@ -829,7 +875,11 @@ function updateSoundOptions() {
 
     // Opção: Sonorização 2
     if (sound2) {
-        const price2 = sound2['Preço promocional'] || sound2['Preço'];
+        const precoPromo2 = sound2['Preço promocional'];
+        const price2 = typeof precoPromo2 === 'string'
+            ? parseFloat(precoPromo2)
+            : (typeof precoPromo2 === 'number' ? precoPromo2 : 0);
+
         const option2 = document.createElement('label');
         option2.className = 'radio-option';
         option2.innerHTML = `
