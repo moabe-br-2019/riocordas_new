@@ -961,7 +961,7 @@ function addSummaryRow(tbody: HTMLElement, label: string, price: number) {
     const tr = document.createElement('tr');
     tr.innerHTML = `
         <td>${label}</td>
-        <td>R$ ${formatPrice(price)}</td>
+        <td style="text-align: right;">R$ ${formatPrice(price)}</td>
     `;
     tbody.appendChild(tr);
 }
