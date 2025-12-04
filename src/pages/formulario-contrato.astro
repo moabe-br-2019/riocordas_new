@@ -6,6 +6,10 @@ import { CONTRACT_CLAUSES } from '../data/contractClauses';
 // Configuração do reCAPTCHA Enterprise
 const recaptchaSiteKey =
   import.meta.env.PUBLIC_RECAPTCHA_SITE_KEY || '6LddECEsAAAAABtUQk25e_vpSNHPTCsQVeEDB96u';
+
+// URL do Google Apps Script
+const googleScriptUrl =
+  import.meta.env.PUBLIC_GOOGLE_SCRIPT_URL || 'https://script.google.com/macros/s/AKfycby6IiBmy8plxmJ9rtyv6qhGVyDOkaH-LhYSUMlsSdpcz9gZpEU9zvb5EHLBstkB6Ok1BQ/exec';
 ---
 
 <Layout
@@ -677,7 +681,7 @@ async function submitForm() {
             recaptcha_token: recaptchaToken
         };
 
-        const scriptUrl = 'https://script.google.com/macros/s/AKfycby6IiBmy8plxmJ9rtyv6qhGVyDOkaH-LhYSUMlsSdpcz9gZpEU9zvb5EHLBstkB6Ok1BQ/exec';
+        const scriptUrl = '${googleScriptUrl}';
 
         console.log('Enviando dados para Google Apps Script...');
         console.log('URL:', scriptUrl);
