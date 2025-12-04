@@ -642,11 +642,19 @@ async function submitForm() {
     if (submitBtn) submitBtn.disabled = true;
 
     try {
+        // Verificar se o reCAPTCHA está carregado
+        if (!(window as any).grecaptcha || !(window as any).grecaptcha.enterprise) {
+            console.error('reCAPTCHA Enterprise não está carregado');
+            throw new Error('reCAPTCHA não carregado');
+        }
+
         // Obter token do reCAPTCHA Enterprise
+        console.log('Obtendo token do reCAPTCHA...');
         const recaptchaToken = await (window as any).grecaptcha.enterprise.execute(
             '6LddECEsAAAAABtUQk25e_vpSNHPTCsQVeEDB96u',
             { action: 'submit_form' }
         );
+        console.log('Token reCAPTCHA obtido:', recaptchaToken ? 'Sucesso' : 'Falhou');
 
         const formData = {
             nome_completo: getInputValue('fullName'),
@@ -670,7 +678,11 @@ async function submitForm() {
 
         const scriptUrl = 'https://script.google.com/macros/s/AKfycby6IiBmy8plxmJ9rtyv6qhGVyDOkaH-LhYSUMlsSdpcz9gZpEU9zvb5EHLBstkB6Ok1BQ/exec';
 
-        await fetch(scriptUrl, {
+        console.log('Enviando dados para Google Apps Script...');
+        console.log('URL:', scriptUrl);
+        console.log('Dados:', formData);
+
+        const response = await fetch(scriptUrl, {
             method: 'POST',
             mode: 'no-cors',
             headers: {
@@ -679,17 +691,28 @@ async function submitForm() {
             body: JSON.stringify(formData)
         });
 
-        console.log('Dados enviados com sucesso:', formData);
+        console.log('Resposta do servidor:', response);
+        console.log('Status:', response.type);
+
+        // Com no-cors, sempre consideramos sucesso se não der erro
+        console.log('Formulário enviado com sucesso!');
         setTimeout(() => {
             if (loadingOverlay) loadingOverlay.style.display = 'none';
             showSuccessMessage();
         }, 1500);
     } catch (error) {
-        console.error('Erro ao enviar dados:', error);
+        console.error('ERRO ao enviar formulário:', error);
+        console.error('Detalhes do erro:', {
+            message: (error as Error).message,
+            stack: (error as Error).stack
+        });
+
+        // Mostrar erro ao usuário
         setTimeout(() => {
             if (loadingOverlay) loadingOverlay.style.display = 'none';
-            showSuccessMessage();
-        }, 1500);
+            if (submitBtn) submitBtn.disabled = false;
+            alert('Erro ao enviar o formulário. Por favor, tente novamente ou entre em contato conosco.');
+        }, 500);
     }
 }
 
