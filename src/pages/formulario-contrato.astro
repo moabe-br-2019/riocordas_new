@@ -525,10 +525,10 @@ interface InstrumentOptions {
 
 interface PricingItem {
     id: number;
-    year: number;
-    'Pacote Sample': string;
-    'Preço': number;
-    'Preço promocional': number;
+    Ano: string | number;
+    'Pacote Sample': Array<{id: number; value: string; order: string}> | string;
+    'Preço': string | number;
+    'Preço promocional': string | number;
 }
 
 let currentStep: number = 0;
@@ -552,7 +552,11 @@ async function fetchPricingForYear(year: number) {
         if (!data.success) throw new Error('Erro ao buscar preços');
 
         // Filtrar preços do ano específico
-        pricingData = data.pricing.filter((p: any) => p.year === year);
+        // O campo 'Ano' pode vir como string ou número
+        pricingData = data.pricing.filter((p: any) => {
+            const itemYear = typeof p.Ano === 'string' ? parseInt(p.Ano) : p.Ano;
+            return itemYear === year;
+        });
 
         console.log('Preços carregados para o ano', year, pricingData);
         return pricingData;
@@ -564,16 +568,39 @@ async function fetchPricingForYear(year: number) {
 }
 
 function getPriceByName(packageName: string): number {
-    const item = pricingData.find(p =>
-        p['Pacote Sample']?.toLowerCase().includes(packageName.toLowerCase())
-    );
+    const item = pricingData.find(p => {
+        const pacoteSample = p['Pacote Sample'];
+
+        // Pacote Sample pode ser um array de objetos ou string
+        if (Array.isArray(pacoteSample)) {
+            return pacoteSample.some(pkg =>
+                pkg.value?.toLowerCase().includes(packageName.toLowerCase())
+            );
+        }
+
+        // Se for string
+        if (typeof pacoteSample === 'string') {
+            return pacoteSample.toLowerCase().includes(packageName.toLowerCase());
+        }
+
+        return false;
+    });
 
     if (!item) {
         console.warn('Preço não encontrado para:', packageName);
         return 0;
     }
 
-    return item['Preço promocional'] || item['Preço'] || 0;
+    // Converter preços de string para número
+    const precoPromocional = typeof item['Preço promocional'] === 'string'
+        ? parseFloat(item['Preço promocional'])
+        : item['Preço promocional'];
+
+    const preco = typeof item['Preço'] === 'string'
+        ? parseFloat(item['Preço'])
+        : item['Preço'];
+
+    return precoPromocional || preco || 0;
 }
 
 function formatPrice(price: number): string {
