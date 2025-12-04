@@ -203,16 +203,9 @@ const googleScriptUrl =
                 <!-- ETAPA 6: Sonorização -->
                 <div class="form-step" id="step-6" style="display: none;">
                     <h2>Sonorização</h2>
-                    <p class="form-description">Deseja contratar sonorização para o evento?</p>
-                    <div class="radio-group">
-                        <label class="radio-option">
-                            <input type="radio" name="sound" value="sim" required>
-                            <span class="radio-label">Sim, quero contratar</span>
-                        </label>
-                        <label class="radio-option">
-                            <input type="radio" name="sound" value="nao" required>
-                            <span class="radio-label">Não quero contratar</span>
-                        </label>
+                    <p class="form-description">Escolha a opção de sonorização para seu evento:</p>
+                    <div class="radio-group" id="soundOptionsContainer">
+                        <!-- Preenchido dinamicamente pelo JavaScript -->
                     </div>
                     <div class="error-message" id="soundError"></div>
                 </div>
@@ -252,8 +245,32 @@ const googleScriptUrl =
                     <div class="error-message" id="paymentError"></div>
                 </div>
 
-                <!-- ETAPA 9: Considerações Finais -->
+                <!-- ETAPA 9: Resumo de Valores -->
                 <div class="form-step" id="step-9" style="display: none;">
+                    <h2>Resumo de Valores</h2>
+                    <p class="form-description">Confira os valores do seu contrato:</p>
+
+                    <div class="pricing-summary">
+                        <table class="pricing-table">
+                            <tbody id="pricingSummaryBody">
+                                <!-- Preenchido dinamicamente -->
+                            </tbody>
+                            <tfoot>
+                                <tr class="total-row">
+                                    <td><strong>VALOR TOTAL</strong></td>
+                                    <td><strong id="totalPrice">R$ 0,00</strong></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+
+                        <div class="payment-summary" id="paymentSummary">
+                            <!-- Preenchido dinamicamente com parcelas -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ETAPA 10: Considerações Finais -->
+                <div class="form-step" id="step-10" style="display: none;">
                     <h2>Considerações Finais</h2>
                     <div class="form-group">
                         <label for="finalObservations">Perguntas, dúvidas ou solicitações especiais:</label>
@@ -411,6 +428,75 @@ const googleScriptUrl =
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes scaleIn { 0% { transform: scale(0); opacity: 0; } 50% { transform: scale(1.1); } 100% { transform: scale(1); opacity: 1; } }
+
+    /* Estilos para Resumo de Valores */
+    .pricing-summary {
+        background-color: #f9f9f9;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 25px;
+        margin-top: 20px;
+    }
+
+    .pricing-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+    }
+
+    .pricing-table tbody tr {
+        border-bottom: 1px solid #e0e0e0;
+    }
+
+    .pricing-table td {
+        padding: 12px 0;
+    }
+
+    .pricing-table td:first-child {
+        color: #666;
+    }
+
+    .pricing-table td:last-child {
+        text-align: right;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .total-row {
+        border-top: 2px solid var(--accent-color) !important;
+        font-size: 18px;
+    }
+
+    .total-row td {
+        padding: 15px 0 !important;
+        color: var(--accent-color) !important;
+    }
+
+    .payment-summary {
+        background-color: white;
+        border-radius: 6px;
+        padding: 20px;
+        margin-top: 15px;
+    }
+
+    .payment-summary h3 {
+        font-family: 'Playfair Display', serif;
+        font-size: 18px;
+        color: #333;
+        margin-bottom: 15px;
+    }
+
+    .payment-summary .installment {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 0;
+        border-bottom: 1px dashed #e0e0e0;
+    }
+
+    .payment-summary .installment:last-child {
+        border-bottom: none;
+    }
+
     @media (max-width: 768px) { .form-row { grid-template-columns: 1fr; gap: 0; } .form-header { padding: 30px 20px; } .form-header h1 { font-size: 24px; } .contract-form { padding: 25px 20px; } .form-navigation { flex-direction: column; } .btn-primary, .btn-secondary, .btn-submit { padding: 12px 20px; font-size: 14px; } }
     @media (max-width: 480px) { .form-header { padding: 20px 15px; } .form-header h1 { font-size: 20px; } .form-header p { font-size: 14px; } .contract-form { padding: 20px 15px; } .form-step h2 { font-size: 20px; } .success-actions { flex-direction: row; gap: 20px; } .btn-action { width: auto; padding: 12px 20px; font-size: 14px; } .btn-action-wrapper { gap: 8px; } .btn-action-text { font-size: 11px; } .success-icon { width: 80px; height: 80px; font-size: 40px; } }
 </style>
@@ -437,8 +523,18 @@ interface InstrumentOptions {
     [key: string]: string[];
 }
 
+interface PricingItem {
+    id: number;
+    year: number;
+    'Pacote Sample': string;
+    'Preço': number;
+    'Preço promocional': number;
+}
+
 let currentStep: number = 0;
-const totalSteps: number = 10;
+const totalSteps: number = 11; // Atualizado de 10 para 11 (novo step de resumo)
+let pricingData: PricingItem[] = [];
+let eventYear: number | null = null;
 
 const instrumentOptions: InstrumentOptions = {
     dueto: ['Violino + Teclado', 'Voz + Teclado', 'Flauta + Teclado', 'Sax + Teclado'],
@@ -446,6 +542,43 @@ const instrumentOptions: InstrumentOptions = {
     quarteto: ['2 Violinos + Cello + Teclado', 'Violino + Flauta + Cello + Teclado', 'Violino + Cello + Voz + Teclado', 'Violino + Cello + Sax + Teclado', '2 Violinos + Viola + Cello (Quarteto Clássico)'],
     quinteto: ['2 Violinos + Viola + Cello + Teclado', '2 Violinos + Flauta + Cello + Teclado', '2 Violinos + Cello + Voz + Teclado', '2 Violinos + Voz + Sax + Teclado']
 };
+
+// Funções utilitárias para buscar e processar preços
+async function fetchPricingForYear(year: number) {
+    try {
+        const response = await fetch('/api/valores');
+        const data = await response.json();
+
+        if (!data.success) throw new Error('Erro ao buscar preços');
+
+        // Filtrar preços do ano específico
+        pricingData = data.pricing.filter((p: any) => p.year === year);
+
+        console.log('Preços carregados para o ano', year, pricingData);
+        return pricingData;
+    } catch (error) {
+        console.error('Erro ao buscar preços:', error);
+        alert('Erro ao carregar preços. Por favor, recarregue a página.');
+        return [];
+    }
+}
+
+function getPriceByName(packageName: string): number {
+    const item = pricingData.find(p =>
+        p['Pacote Sample']?.toLowerCase().includes(packageName.toLowerCase())
+    );
+
+    if (!item) {
+        console.warn('Preço não encontrado para:', packageName);
+        return 0;
+    }
+
+    return item['Preço promocional'] || item['Preço'] || 0;
+}
+
+function formatPrice(price: number): string {
+    return price.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
 
 document.addEventListener('DOMContentLoaded', function() {
     const nextBtn = document.getElementById('nextBtn');
@@ -508,6 +641,11 @@ function showStep(step: number) {
             currentStepElement.style.display = 'block';
         }
 
+        // Ao entrar no step 9 (resumo), calcular valores
+        if (step === 9) {
+            calculateAndDisplaySummary();
+        }
+
         const emailDisplayBar = document.getElementById('emailDisplayBar');
         if (emailDisplayBar) {
             emailDisplayBar.style.display = step > 0 ? 'flex' : 'none';
@@ -518,8 +656,8 @@ function showStep(step: number) {
         const submitBtn = document.getElementById('submitBtn');
 
         if (prevBtn) prevBtn.style.display = step > 0 ? 'block' : 'none';
-        if (submitBtn) submitBtn.style.display = step === 9 ? 'block' : 'none';
-        if (nextBtn) nextBtn.style.display = step !== 9 ? 'block' : 'none';
+        if (submitBtn) submitBtn.style.display = step === 10 ? 'block' : 'none';
+        if (nextBtn) nextBtn.style.display = step !== 10 ? 'block' : 'none';
 
         document.querySelector('.contract-form')?.scrollIntoView({ behavior: 'smooth' });
     }, 300);
@@ -561,6 +699,13 @@ function validateStep(step: number): boolean {
     } else if (step === 2) {
         if (!getInputValue('venueAddress')) { showError('venueAddressError', 'Endereço do evento obrigatório.'); isValid = false; } else clearError('venueAddressError');
         if (!getInputValue('eventDate')) { showError('eventDateError', 'Data obrigatória.'); isValid = false; } else clearError('eventDateError');
+
+        // Validar se há preços para o ano selecionado
+        if (eventYear && pricingData.length === 0) {
+            showError('eventDateError', 'Não há preços cadastrados para este ano. Entre em contato conosco.');
+            isValid = false;
+        }
+
         if (!getInputValue('guestCount')) { showError('guestCountError', 'Nº de convidados obrigatório.'); isValid = false; } else clearError('guestCountError');
         const guestTime = getInputValue('guestArrivalTime');
         const ceremonyTime = getInputValue('ceremonyStartTime');
@@ -624,6 +769,196 @@ function updateInstruments() {
     }
 }
 
+function updateSoundOptions() {
+    const container = document.getElementById('soundOptionsContainer');
+    if (!container) return;
+
+    container.innerHTML = '';
+
+    // Buscar opções de sonorização nos dados
+    const sound1 = pricingData.find(p => p['Pacote Sample']?.includes('Sonorização 1'));
+    const sound2 = pricingData.find(p => p['Pacote Sample']?.includes('Sonorização 2'));
+
+    // Opção: Nenhuma sonorização
+    const noneOption = document.createElement('label');
+    noneOption.className = 'radio-option';
+    noneOption.innerHTML = `
+        <input type="radio" name="sound" value="nenhum" required checked>
+        <span class="radio-label">Sem Sonorização (R$ 0,00)</span>
+    `;
+    container.appendChild(noneOption);
+
+    // Opção: Sonorização 1
+    if (sound1) {
+        const price1 = sound1['Preço promocional'] || sound1['Preço'];
+        const option1 = document.createElement('label');
+        option1.className = 'radio-option';
+        option1.innerHTML = `
+            <input type="radio" name="sound" value="sonorizacao_1" required>
+            <span class="radio-label">Sonorização 1 (R$ ${formatPrice(price1)})</span>
+        `;
+        container.appendChild(option1);
+    }
+
+    // Opção: Sonorização 2
+    if (sound2) {
+        const price2 = sound2['Preço promocional'] || sound2['Preço'];
+        const option2 = document.createElement('label');
+        option2.className = 'radio-option';
+        option2.innerHTML = `
+            <input type="radio" name="sound" value="sonorizacao_2" required>
+            <span class="radio-label">Sonorização 2 (R$ ${formatPrice(price2)})</span>
+        `;
+        container.appendChild(option2);
+    }
+}
+
+// Funções auxiliares para obter preços específicos
+function getPriceByFormation(formation: string): number {
+    const map: { [key: string]: string } = {
+        'dueto': 'Dueto Instrumental',
+        'trio': 'Trio Instrumental',
+        'quarteto': 'Quarteto Instrumental',
+        'quinteto': 'Quinteto Instrumental'
+    };
+    return getPriceByName(map[formation] || '');
+}
+
+function getPriceByTrumpet(trumpet: string): number {
+    return trumpet === 'um'
+        ? getPriceByName('1 Trompete Triunfal')
+        : getPriceByName('2 Trompetes Triunfais');
+}
+
+function getPriceBySound(sound: string): number {
+    return sound === 'sonorizacao_1'
+        ? getPriceByName('Sonorização 1')
+        : getPriceByName('Sonorização 2');
+}
+
+// Funções auxiliares para labels
+function getFormationLabel(formation: string): string {
+    const labels: { [key: string]: string } = {
+        'dueto': 'Dueto Instrumental',
+        'trio': 'Trio Instrumental',
+        'quarteto': 'Quarteto Instrumental',
+        'quinteto': 'Quinteto Instrumental'
+    };
+    return labels[formation] || formation;
+}
+
+function getTrumpetLabel(trumpet: string): string {
+    return trumpet === 'um' ? '1 Trompete Triunfal' : '2 Trompetes Triunfais';
+}
+
+function getSoundLabel(sound: string): string {
+    return sound === 'sonorizacao_1' ? 'Sonorização 1' : 'Sonorização 2';
+}
+
+// Adicionar linha à tabela de resumo
+function addSummaryRow(tbody: HTMLElement, label: string, price: number) {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+        <td>${label}</td>
+        <td>R$ ${formatPrice(price)}</td>
+    `;
+    tbody.appendChild(tr);
+}
+
+// Função principal para calcular e exibir resumo
+function calculateAndDisplaySummary() {
+    const summaryBody = document.getElementById('pricingSummaryBody');
+    const totalPriceEl = document.getElementById('totalPrice');
+    const paymentSummaryEl = document.getElementById('paymentSummary');
+
+    if (!summaryBody || !totalPriceEl || !paymentSummaryEl) return;
+
+    summaryBody.innerHTML = '';
+    let total = 0;
+
+    // 1. Pacote de formação
+    const formation = getCheckedValue('formation');
+    const formationPrice = getPriceByFormation(formation);
+    if (formationPrice > 0) {
+        total += formationPrice;
+        addSummaryRow(summaryBody, getFormationLabel(formation), formationPrice);
+    }
+
+    // 2. Trompete
+    const trumpet = getCheckedValue('trumpet');
+    if (trumpet !== 'nenhum') {
+        const trumpetPrice = getPriceByTrumpet(trumpet);
+        if (trumpetPrice > 0) {
+            total += trumpetPrice;
+            addSummaryRow(summaryBody, getTrumpetLabel(trumpet), trumpetPrice);
+        }
+    }
+
+    // 3. Sonorização
+    const sound = getCheckedValue('sound');
+    if (sound !== 'nenhum') {
+        const soundPrice = getPriceBySound(sound);
+        if (soundPrice > 0) {
+            total += soundPrice;
+            addSummaryRow(summaryBody, getSoundLabel(sound), soundPrice);
+        }
+    }
+
+    // Exibir total
+    totalPriceEl.textContent = `R$ ${formatPrice(total)}`;
+
+    // Calcular e exibir parcelamento
+    displayPaymentBreakdown(paymentSummaryEl, total);
+}
+
+// Exibir breakdown de pagamento
+function displayPaymentBreakdown(container: HTMLElement, total: number) {
+    const payment = getCheckedValue('payment');
+    container.innerHTML = '';
+
+    const h3 = document.createElement('h3');
+    h3.textContent = 'Forma de Pagamento';
+    container.appendChild(h3);
+
+    if (payment === 'vista') {
+        container.innerHTML += `
+            <div class="installment">
+                <span>À Vista</span>
+                <span><strong>R$ ${formatPrice(total)}</strong></span>
+            </div>
+        `;
+    } else if (payment === '2x') {
+        const first = total * 0.30; // 30% de sinal
+        const second = total * 0.70; // 70% restante
+        container.innerHTML += `
+            <div class="installment">
+                <span>1ª Parcela (30% - Sinal)</span>
+                <span><strong>R$ ${formatPrice(first)}</strong></span>
+            </div>
+            <div class="installment">
+                <span>2ª Parcela (70% - Restante na semana do evento)</span>
+                <span><strong>R$ ${formatPrice(second)}</strong></span>
+            </div>
+        `;
+    } else if (payment === '3x') {
+        const installment = total / 3;
+        container.innerHTML += `
+            <div class="installment">
+                <span>1ª Parcela (na assinatura)</span>
+                <span><strong>R$ ${formatPrice(installment)}</strong></span>
+            </div>
+            <div class="installment">
+                <span>2ª Parcela</span>
+                <span><strong>R$ ${formatPrice(installment)}</strong></span>
+            </div>
+            <div class="installment">
+                <span>3ª Parcela</span>
+                <span><strong>R$ ${formatPrice(installment)}</strong></span>
+            </div>
+        `;
+    }
+}
+
 function isValidCPF(cpf: string): boolean {
     cpf = cpf.replace(/\D/g, '');
     if (cpf.length !== 11 || /^(\d)\1{10}$/.test(cpf)) return false;
@@ -661,6 +996,16 @@ async function submitForm() {
         );
         console.log('Token reCAPTCHA obtido:', recaptchaToken ? 'Sucesso' : 'Falhou');
 
+        // Calcular valores para enviar
+        const formation = getCheckedValue('formation');
+        const trumpet = getCheckedValue('trumpet');
+        const sound = getCheckedValue('sound');
+
+        const preco_pacote = getPriceByFormation(formation);
+        const preco_trompete = trumpet !== 'nenhum' ? getPriceByTrumpet(trumpet) : 0;
+        const preco_sonorizacao = sound !== 'nenhum' ? getPriceBySound(sound) : 0;
+        const valor_total = preco_pacote + preco_trompete + preco_sonorizacao;
+
         const formData = {
             nome_completo: getInputValue('fullName'),
             cpf: getInputValue('cpf'),
@@ -673,11 +1018,20 @@ async function submitForm() {
             data_evento: getInputValue('eventDate'),
             horario_cerimonia: getInputValue('ceremonyStartTime'),
             horario_convidados: getInputValue('guestArrivalTime'),
-            pacote: getCheckedValue('formation'),
-            trompete: getCheckedValue('trumpet'),
-            sonorizacao: getCheckedValue('sound'),
+            pacote: formation,
+            trompete: trumpet,
+            sonorizacao: sound,
             forma_pagamento: getCheckedValue('payment'),
             instrumentos_escolhidos: getCheckedValue('instruments'),
+
+            // Novos campos de valores
+            preco_pacote: preco_pacote,
+            preco_trompete: preco_trompete,
+            preco_sonorizacao: preco_sonorizacao,
+            valor_total: valor_total,
+            ano_evento: eventYear,
+            observacoes: getInputValue('finalObservations'),
+
             recaptcha_token: recaptchaToken
         };
 
@@ -796,6 +1150,24 @@ function setupInputMasks() {
             else if (v.length > 6) v = v.replace(/(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3');
             else if (v.length > 2) v = v.replace(/(\d{2})(\d{0,5})/, '($1) $2');
             target.value = v;
+        });
+    }
+
+    // Listener para data do evento - buscar preços do ano
+    const eventDateInput = document.getElementById('eventDate') as HTMLInputElement | null;
+    if (eventDateInput) {
+        eventDateInput.addEventListener('change', async (e: Event) => {
+            const target = e.target as HTMLInputElement;
+            const date = new Date(target.value);
+            eventYear = date.getFullYear();
+
+            console.log('Ano do evento:', eventYear);
+
+            // Buscar preços do ano
+            await fetchPricingForYear(eventYear);
+
+            // Atualizar opções de sonorização
+            updateSoundOptions();
         });
     }
 }
