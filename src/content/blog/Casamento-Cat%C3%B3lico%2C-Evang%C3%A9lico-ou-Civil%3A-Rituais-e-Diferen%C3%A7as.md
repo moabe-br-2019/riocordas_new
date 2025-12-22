@@ -8,7 +8,7 @@ tags: ["cerimônia de casamento","casamento católico","casamento evangélico","
 draft: false
 ---
 
-Ao planejar a trilha sonora do grande dia, entender as diferenças entre casamento católico, evangélico e civil é fundamental. Cada formato tem um ritmo, uma linguagem e um espaço específico para a música. Conhecer esses [tipos de cerimônia](/blog/cerimonia-de-casamento-catolica-evangelica-e-civil) ajuda a escolher melhor repertório, arranjos e momentos musicais.
+Ao planejar a trilha sonora do grande dia, entender as diferenças entre casamento católico, evangélico e civil é fundamental. Cada formato tem um ritmo, uma linguagem e um espaço específico para a música. Conhecer esses [tipos de cerimônia](https://riocordas.com.br/blog/como-escolher-musicas-casamento/) ajuda a escolher melhor repertório, arranjos e momentos musicais.
 
 ## A cerimônia católica e seus rituais
 
@@ -26,7 +26,7 @@ Em geral, a cerimônia inclui:
 
 Algumas igrejas permitem símbolos complementares, como velas, terço, cordão de noivos ou arras, sempre com sentido espiritual. A duração média é de 45 a 60 minutos, dependendo se há missa completa ou apenas celebração do matrimônio.
 
-A música precisa ser litúrgica ou inspirada em textos religiosos. Para quem busca ideias, um bom ponto de partida é explorar um [repertório para casamento católico](/blog/principais-musicas-para-casamento-catolico-dicas-e-sugestoes-para-noivas) adequado às normas da paróquia.
+A música precisa ser litúrgica ou inspirada em textos religiosos. Para quem busca ideias, um bom ponto de partida é explorar um [repertório para casamento católico](https://riocordas.com.br/blog/principais-musicas-para-casamento-catolico-dicas-e-sugestoes/) adequado às normas da paróquia.
 
 ## A cerimônia evangélica: tradição e personalização
 
