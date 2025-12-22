@@ -3,7 +3,7 @@ title: "Casamento em 2026 no Rio: Melhores Datas para Dizer Sim"
 description: "Descubra as melhores datas para casar no Rio de Janeiro em 2026. Clima, feriados, alta e baixa temporada e dicas para escolher o dia perfeito."
 pubDate: 2025-12-21
 author: "Grupo Rio Cordas"
-image: "https://pub-4e9b4808180243fe9efbc3ce3494c770.r2.dev/1766373757169-581345.png"
+image: "https://pub-4e9b4808180243fe9efbc3ce3494c770.r2.dev/1766377950126-814118.png"
 tags: ["casamento 2026","casamento Rio de Janeiro","data de casamento","planejamento de casamento"]
 draft: false
 ---
