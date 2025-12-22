@@ -3,7 +3,7 @@ title: "Casamento Católico, Evangélico ou Civil: Rituais e Diferenças"
 description: "Conheça as diferenças entre casamento católico, evangélico e civil. Entenda a ritualística, duração e música ideal para cada tipo de cerimônia."
 pubDate: 2025-12-21
 author: "Grupo Rio Cordas"
-image: "https://pub-4e9b4808180243fe9efbc3ce3494c770.r2.dev/1766375743697-915469.png"
+image: "https://pub-4e9b4808180243fe9efbc3ce3494c770.r2.dev/1766377695775-892049.png"
 tags: ["cerimônia de casamento","casamento católico","casamento evangélico","casamento civil","música para casamento","rituais de casamento"]
 draft: false
 ---
