@@ -558,15 +558,27 @@ const googleScriptUrl =
     .radio-label { font-size: 15px; color: #333; }
 </style>
 
-<script define:vars={{ googleScriptUrl }} is:inline>
-// Script inline - sem TypeScript para compatibilidade com define:vars
+<script>
+// Sem @ts-nocheck! TypeScript puro agora.
 
-let currentStep = 0;
-const totalSteps = 10; // Total de steps no formulário
-let pricingData = [];
-let eventYear = null;
+interface InstrumentOptions {
+    [key: string]: string[];
+}
 
-const instrumentOptions = {
+interface PricingItem {
+    id: number;
+    Ano: string | number;
+    'Pacote Sample': Array<{id: number; value: string; order: string}> | string;
+    'Preço': string | number;
+    'Preço promocional': string | number;
+}
+
+let currentStep: number = 0;
+const totalSteps: number = 10; // Total de steps no formulário
+let pricingData: PricingItem[] = [];
+let eventYear: number | null = null;
+
+const instrumentOptions: InstrumentOptions = {
     dueto: ['Violino + Teclado', 'Voz + Teclado', 'Flauta + Teclado', 'Sax + Teclado'],
     trio: ['Violino + Cello + Teclado', 'Violino + Flauta + Teclado', 'Violino + Voz + Teclado', 'Violino + Sax + Teclado'],
     quarteto: ['2 Violinos + Cello + Teclado', 'Violino + Flauta + Cello + Teclado', 'Violino + Cello + Voz + Teclado', 'Violino + Cello + Sax + Teclado', '2 Violinos + Viola + Cello (Quarteto Clássico)'],
@@ -574,7 +586,7 @@ const instrumentOptions = {
 };
 
 // Funções utilitárias para buscar e processar preços
-async function fetchPricingForYear(year) {
+async function fetchPricingForYear(year: number) {
     try {
         const response = await fetch('/api/valores');
         const data = await response.json();
@@ -597,7 +609,7 @@ async function fetchPricingForYear(year) {
     }
 }
 
-function getPriceByName(packageName) {
+function getPriceByName(packageName: string): number {
     const item = pricingData.find(p => {
         const pacoteSample = p['Pacote Sample'];
 
@@ -633,7 +645,7 @@ function getPriceByName(packageName) {
     return precoPromocional || preco || 0;
 }
 
-function formatPrice(price) {
+function formatPrice(price: number): string {
     return price.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
@@ -664,22 +676,22 @@ document.addEventListener('DOMContentLoaded', function() {
     showStep(currentStep);
 });
 
-function getInputValue(id) {
-    const el = document.getElementById(id);
+function getInputValue(id: string): string {
+    const el = document.getElementById(id) as HTMLInputElement | HTMLTextAreaElement | null;
     return el ? el.value.trim() : '';
 }
 
-function isInputChecked(name) {
+function isInputChecked(name: string): boolean {
     const el = document.querySelector(`input[name="${name}"]:checked`);
     return el !== null;
 }
 
-function getCheckedValue(name) {
-    const el = document.querySelector(`input[name="${name}"]:checked`);
+function getCheckedValue(name: string): string {
+    const el = document.querySelector(`input[name="${name}"]:checked`) as HTMLInputElement | null;
     return el ? el.value : '';
 }
 
-function showStep(step) {
+function showStep(step: number) {
     const steps = document.querySelectorAll('.form-step');
     steps.forEach(s => {
         const el = s as HTMLElement;
@@ -738,7 +750,7 @@ function goToPreviousStep() {
     }
 }
 
-function validateStep(step) {
+function validateStep(step: number): boolean {
     let isValid = true;
     if (step === 0) {
         const email = getInputValue('email');
@@ -789,7 +801,7 @@ function validateStep(step) {
     } else if (step === 6) {
         if (!isInputChecked('sound')) { showError('soundError', 'Escolha uma opção.'); isValid = false; } else clearError('soundError');
     } else if (step === 7) {
-        const terms = document.getElementById('acceptTerms');
+        const terms = document.getElementById('acceptTerms') as HTMLInputElement | null;
         if (!terms || !terms.checked) { showError('termsError', 'Aceite os termos.'); isValid = false; } else clearError('termsError');
     } else if (step === 8) {
         if (!isInputChecked('payment')) { showError('paymentError', 'Escolha o pagamento.'); isValid = false; } else clearError('paymentError');
@@ -797,21 +809,21 @@ function validateStep(step) {
     return isValid;
 }
 
-function showError(id, msg) {
+function showError(id: string, msg: string) {
     const el = document.getElementById(id);
     if (el) { el.textContent = msg; el.classList.add('active'); }
 }
-function clearError(id) {
+function clearError(id: string) {
     const el = document.getElementById(id);
     if (el) { el.textContent = ''; el.classList.remove('active'); }
 }
 
 function updateInstruments() {
-    const formationCheckbox = document.querySelector('input[name="formation"]:checked');
+    const formationCheckbox = document.querySelector('input[name="formation"]:checked') as HTMLInputElement | null;
     const selectedFormation = formationCheckbox ? formationCheckbox.value : null;
     const container = document.getElementById('instrumentsContainer');
     if (!container || !selectedFormation) return;
-    const currentChecked = document.querySelector('input[name="instruments"]:checked');
+    const currentChecked = document.querySelector('input[name="instruments"]:checked') as HTMLInputElement | null;
     const currentVal = currentChecked ? currentChecked.value : null;
     container.innerHTML = '';
     const options = instrumentOptions[selectedFormation];
@@ -903,8 +915,8 @@ function updateSoundOptions() {
 }
 
 // Funções auxiliares para obter preços específicos
-function getPriceByFormation(formation) {
-    const map = {
+function getPriceByFormation(formation: string): number {
+    const map: { [key: string]: string } = {
         'dueto': 'Dueto Instrumental',
         'trio': 'Trio Instrumental',
         'quarteto': 'Quarteto Instrumental',
@@ -913,21 +925,21 @@ function getPriceByFormation(formation) {
     return getPriceByName(map[formation] || '');
 }
 
-function getPriceByTrumpet(trumpet) {
+function getPriceByTrumpet(trumpet: string): number {
     return trumpet === 'um'
         ? getPriceByName('1 Trompete Triunfal')
         : getPriceByName('2 Trompetes Triunfais');
 }
 
-function getPriceBySound(sound) {
+function getPriceBySound(sound: string): number {
     return sound === 'sonorizacao_1'
         ? getPriceByName('Sonorização 1')
         : getPriceByName('Sonorização 2');
 }
 
 // Funções auxiliares para labels
-function getFormationLabel(formation) {
-    const labels = {
+function getFormationLabel(formation: string): string {
+    const labels: { [key: string]: string } = {
         'dueto': 'Dueto Instrumental',
         'trio': 'Trio Instrumental',
         'quarteto': 'Quarteto Instrumental',
@@ -936,16 +948,16 @@ function getFormationLabel(formation) {
     return labels[formation] || formation;
 }
 
-function getTrumpetLabel(trumpet) {
+function getTrumpetLabel(trumpet: string): string {
     return trumpet === 'um' ? '1 Trompete Triunfal' : '2 Trompetes Triunfais';
 }
 
-function getSoundLabel(sound) {
+function getSoundLabel(sound: string): string {
     return sound === 'sonorizacao_1' ? 'Sonorização 1' : 'Sonorização 2';
 }
 
 // Adicionar linha à tabela de resumo
-function addSummaryRow(tbody, label, price) {
+function addSummaryRow(tbody: HTMLElement, label: string, price: number) {
     const tr = document.createElement('tr');
     tr.innerHTML = `
         <td>${label}</td>
@@ -1001,7 +1013,7 @@ function calculateAndDisplaySummary() {
 }
 
 // Exibir breakdown de pagamento
-function displayPaymentBreakdown(container, total) {
+function displayPaymentBreakdown(container: HTMLElement, total: number) {
     const payment = getCheckedValue('payment');
     container.innerHTML = '';
 
@@ -1048,7 +1060,7 @@ function displayPaymentBreakdown(container, total) {
     }
 }
 
-function isValidCPF(cpf) {
+function isValidCPF(cpf: string): boolean {
     cpf = cpf.replace(/\D/g, '');
     if (cpf.length !== 11 || /^(\d)\1{10}$/.test(cpf)) return false;
     let sum = 0;
@@ -1065,7 +1077,7 @@ function isValidCPF(cpf) {
 
 async function submitForm() {
     const loadingOverlay = document.getElementById('loadingOverlay');
-    const submitBtn = document.getElementById('submitBtn');
+    const submitBtn = document.getElementById('submitBtn') as HTMLButtonElement | null;
 
     if (loadingOverlay) loadingOverlay.style.display = 'flex';
     if (submitBtn) submitBtn.disabled = true;
@@ -1124,11 +1136,13 @@ async function submitForm() {
             recaptcha_token: recaptchaToken
         };
 
+        const scriptUrl = `${googleScriptUrl}`;
+
         console.log('Enviando dados para Google Apps Script...');
-        console.log('URL:', googleScriptUrl);
+        console.log('URL:', scriptUrl);
         console.log('Dados:', formData);
 
-        const response = await fetch(googleScriptUrl, {
+        const response = await fetch(scriptUrl, {
             method: 'POST',
             mode: 'no-cors',
             headers: {
@@ -1179,8 +1193,8 @@ function setupEmailModal() {
     const editBtn = document.getElementById('editEmailBtn');
     const closeBtns = [document.getElementById('closeEmailModal'), document.getElementById('cancelEmailBtn')];
     const confirmBtn = document.getElementById('confirmEmailBtn');
-    const emailInput = document.getElementById('email');
-    const modalInput = document.getElementById('emailModalInput');
+    const emailInput = document.getElementById('email') as HTMLInputElement | null;
+    const modalInput = document.getElementById('emailModalInput') as HTMLInputElement | null;
     const displayEmail = document.getElementById('displayedEmail');
     const errorMsg = document.getElementById('modalEmailError');
 
@@ -1209,13 +1223,13 @@ function setupEmailModal() {
 }
 
 function updateEmailDisplay() {
-    const emailInput = document.getElementById('email');
+    const emailInput = document.getElementById('email') as HTMLInputElement | null;
     const displayedEmail = document.getElementById('displayedEmail');
     if (displayedEmail && emailInput) displayedEmail.textContent = emailInput.value;
 }
 
 function setupInputMasks() {
-    const cpfInput = document.getElementById('cpf');
+    const cpfInput = document.getElementById('cpf') as HTMLInputElement | null;
     if (cpfInput) {
         cpfInput.addEventListener('input', (e) => {
             const target = e.target as HTMLInputElement;
@@ -1227,7 +1241,7 @@ function setupInputMasks() {
             target.value = v;
         });
     }
-    const phoneInput = document.getElementById('phone');
+    const phoneInput = document.getElementById('phone') as HTMLInputElement | null;
     if (phoneInput) {
         phoneInput.addEventListener('input', (e) => {
             const target = e.target as HTMLInputElement;
@@ -1241,7 +1255,7 @@ function setupInputMasks() {
     }
 
     // Listener para data do evento - buscar preços do ano
-    const eventDateInput = document.getElementById('eventDate');
+    const eventDateInput = document.getElementById('eventDate') as HTMLInputElement | null;
     if (eventDateInput) {
         eventDateInput.addEventListener('change', async (e: Event) => {
             const target = e.target as HTMLInputElement;
