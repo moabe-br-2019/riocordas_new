@@ -1152,13 +1152,19 @@ async function submitForm() {
             forma_pagamento: getPaymentLabel(getCheckedValue('payment')),
             instrumentos_escolhidos: getCheckedValue('instruments'),
 
-            // Novos campos de valores
+            // Novos campos de valores (com underscore para banco de dados)
             preco_pacote: preco_pacote,
             preco_trompete: preco_trompete,
             preco_sonorizacao: preco_sonorizacao,
             valor_total: valor_total,
             ano_evento: eventYear,
             observacoes: getInputValue('finalObservations'),
+
+            // Campos duplicados com espaço para o template do contrato
+            'Valor total': valor_total,
+            'Preço pacote': preco_pacote,
+            'Preço trompete': preco_trompete,
+            'Preço sonorização': preco_sonorizacao,
 
             recaptcha_token: recaptchaToken
         };
