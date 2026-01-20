@@ -16,7 +16,7 @@ const googleScriptUrl =
     title="Formulário de Contrato - Rio Cordas"
     description="Preencha o formulário para contratar os músicos da Rio Cordas. Escolha seus instrumentos, formas de pagamento e assine o contrato online."
 >
-    <div class="contract-form-wrapper">
+    <div class="contract-form-wrapper" data-google-script-url={googleScriptUrl}>
         <!-- Modal de Edição de Email -->
         <div id="emailModal" class="modal-overlay" style="display: none;">
             <div class="modal-content">
@@ -1136,7 +1136,9 @@ async function submitForm() {
             recaptcha_token: recaptchaToken
         };
 
-        const scriptUrl = `${googleScriptUrl}`;
+        // Obter URL do atributo data
+        const wrapper = document.querySelector('.contract-form-wrapper');
+        const scriptUrl = wrapper?.getAttribute('data-google-script-url') || '';
 
         console.log('Enviando dados para Google Apps Script...');
         console.log('URL:', scriptUrl);
