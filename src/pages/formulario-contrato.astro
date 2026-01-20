@@ -558,27 +558,15 @@ const googleScriptUrl =
     .radio-label { font-size: 15px; color: #333; }
 </style>
 
-<script define:vars={{ googleScriptUrl }}>
-// Sem @ts-nocheck! TypeScript puro agora.
+<script define:vars={{ googleScriptUrl }} is:inline>
+// Script inline - sem TypeScript para compatibilidade com define:vars
 
-interface InstrumentOptions {
-    [key: string]: string[];
-}
+let currentStep = 0;
+const totalSteps = 10; // Total de steps no formulário
+let pricingData = [];
+let eventYear = null;
 
-interface PricingItem {
-    id: number;
-    Ano: string | number;
-    'Pacote Sample': Array<{id: number; value: string; order: string}> | string;
-    'Preço': string | number;
-    'Preço promocional': string | number;
-}
-
-let currentStep: number = 0;
-const totalSteps: number = 10; // Total de steps no formulário
-let pricingData: PricingItem[] = [];
-let eventYear: number | null = null;
-
-const instrumentOptions: InstrumentOptions = {
+const instrumentOptions = {
     dueto: ['Violino + Teclado', 'Voz + Teclado', 'Flauta + Teclado', 'Sax + Teclado'],
     trio: ['Violino + Cello + Teclado', 'Violino + Flauta + Teclado', 'Violino + Voz + Teclado', 'Violino + Sax + Teclado'],
     quarteto: ['2 Violinos + Cello + Teclado', 'Violino + Flauta + Cello + Teclado', 'Violino + Cello + Voz + Teclado', 'Violino + Cello + Sax + Teclado', '2 Violinos + Viola + Cello (Quarteto Clássico)'],
@@ -586,7 +574,7 @@ const instrumentOptions: InstrumentOptions = {
 };
 
 // Funções utilitárias para buscar e processar preços
-async function fetchPricingForYear(year: number) {
+async function fetchPricingForYear(year) {
     try {
         const response = await fetch('/api/valores');
         const data = await response.json();
@@ -609,7 +597,7 @@ async function fetchPricingForYear(year: number) {
     }
 }
 
-function getPriceByName(packageName: string): number {
+function getPriceByName(packageName) {
     const item = pricingData.find(p => {
         const pacoteSample = p['Pacote Sample'];
 
@@ -645,7 +633,7 @@ function getPriceByName(packageName: string): number {
     return precoPromocional || preco || 0;
 }
 
-function formatPrice(price: number): string {
+function formatPrice(price) {
     return price.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
@@ -676,22 +664,22 @@ document.addEventListener('DOMContentLoaded', function() {
     showStep(currentStep);
 });
 
-function getInputValue(id: string): string {
-    const el = document.getElementById(id) as HTMLInputElement | HTMLTextAreaElement | null;
+function getInputValue(id) {
+    const el = document.getElementById(id);
     return el ? el.value.trim() : '';
 }
 
-function isInputChecked(name: string): boolean {
+function isInputChecked(name) {
     const el = document.querySelector(`input[name="${name}"]:checked`);
     return el !== null;
 }
 
-function getCheckedValue(name: string): string {
-    const el = document.querySelector(`input[name="${name}"]:checked`) as HTMLInputElement | null;
+function getCheckedValue(name) {
+    const el = document.querySelector(`input[name="${name}"]:checked`);
     return el ? el.value : '';
 }
 
-function showStep(step: number) {
+function showStep(step) {
     const steps = document.querySelectorAll('.form-step');
     steps.forEach(s => {
         const el = s as HTMLElement;
@@ -750,7 +738,7 @@ function goToPreviousStep() {
     }
 }
 
-function validateStep(step: number): boolean {
+function validateStep(step) {
     let isValid = true;
     if (step === 0) {
         const email = getInputValue('email');
@@ -801,7 +789,7 @@ function validateStep(step: number): boolean {
     } else if (step === 6) {
         if (!isInputChecked('sound')) { showError('soundError', 'Escolha uma opção.'); isValid = false; } else clearError('soundError');
     } else if (step === 7) {
-        const terms = document.getElementById('acceptTerms') as HTMLInputElement | null;
+        const terms = document.getElementById('acceptTerms');
         if (!terms || !terms.checked) { showError('termsError', 'Aceite os termos.'); isValid = false; } else clearError('termsError');
     } else if (step === 8) {
         if (!isInputChecked('payment')) { showError('paymentError', 'Escolha o pagamento.'); isValid = false; } else clearError('paymentError');
@@ -809,21 +797,21 @@ function validateStep(step: number): boolean {
     return isValid;
 }
 
-function showError(id: string, msg: string) {
+function showError(id, msg) {
     const el = document.getElementById(id);
     if (el) { el.textContent = msg; el.classList.add('active'); }
 }
-function clearError(id: string) {
+function clearError(id) {
     const el = document.getElementById(id);
     if (el) { el.textContent = ''; el.classList.remove('active'); }
 }
 
 function updateInstruments() {
-    const formationCheckbox = document.querySelector('input[name="formation"]:checked') as HTMLInputElement | null;
+    const formationCheckbox = document.querySelector('input[name="formation"]:checked');
     const selectedFormation = formationCheckbox ? formationCheckbox.value : null;
     const container = document.getElementById('instrumentsContainer');
     if (!container || !selectedFormation) return;
-    const currentChecked = document.querySelector('input[name="instruments"]:checked') as HTMLInputElement | null;
+    const currentChecked = document.querySelector('input[name="instruments"]:checked');
     const currentVal = currentChecked ? currentChecked.value : null;
     container.innerHTML = '';
     const options = instrumentOptions[selectedFormation];
@@ -915,8 +903,8 @@ function updateSoundOptions() {
 }
 
 // Funções auxiliares para obter preços específicos
-function getPriceByFormation(formation: string): number {
-    const map: { [key: string]: string } = {
+function getPriceByFormation(formation) {
+    const map = {
         'dueto': 'Dueto Instrumental',
         'trio': 'Trio Instrumental',
         'quarteto': 'Quarteto Instrumental',
@@ -925,21 +913,21 @@ function getPriceByFormation(formation: string): number {
     return getPriceByName(map[formation] || '');
 }
 
-function getPriceByTrumpet(trumpet: string): number {
+function getPriceByTrumpet(trumpet) {
     return trumpet === 'um'
         ? getPriceByName('1 Trompete Triunfal')
         : getPriceByName('2 Trompetes Triunfais');
 }
 
-function getPriceBySound(sound: string): number {
+function getPriceBySound(sound) {
     return sound === 'sonorizacao_1'
         ? getPriceByName('Sonorização 1')
         : getPriceByName('Sonorização 2');
 }
 
 // Funções auxiliares para labels
-function getFormationLabel(formation: string): string {
-    const labels: { [key: string]: string } = {
+function getFormationLabel(formation) {
+    const labels = {
         'dueto': 'Dueto Instrumental',
         'trio': 'Trio Instrumental',
         'quarteto': 'Quarteto Instrumental',
@@ -948,16 +936,16 @@ function getFormationLabel(formation: string): string {
     return labels[formation] || formation;
 }
 
-function getTrumpetLabel(trumpet: string): string {
+function getTrumpetLabel(trumpet) {
     return trumpet === 'um' ? '1 Trompete Triunfal' : '2 Trompetes Triunfais';
 }
 
-function getSoundLabel(sound: string): string {
+function getSoundLabel(sound) {
     return sound === 'sonorizacao_1' ? 'Sonorização 1' : 'Sonorização 2';
 }
 
 // Adicionar linha à tabela de resumo
-function addSummaryRow(tbody: HTMLElement, label: string, price: number) {
+function addSummaryRow(tbody, label, price) {
     const tr = document.createElement('tr');
     tr.innerHTML = `
         <td>${label}</td>
@@ -1013,7 +1001,7 @@ function calculateAndDisplaySummary() {
 }
 
 // Exibir breakdown de pagamento
-function displayPaymentBreakdown(container: HTMLElement, total: number) {
+function displayPaymentBreakdown(container, total) {
     const payment = getCheckedValue('payment');
     container.innerHTML = '';
 
@@ -1060,7 +1048,7 @@ function displayPaymentBreakdown(container: HTMLElement, total: number) {
     }
 }
 
-function isValidCPF(cpf: string): boolean {
+function isValidCPF(cpf) {
     cpf = cpf.replace(/\D/g, '');
     if (cpf.length !== 11 || /^(\d)\1{10}$/.test(cpf)) return false;
     let sum = 0;
@@ -1077,7 +1065,7 @@ function isValidCPF(cpf: string): boolean {
 
 async function submitForm() {
     const loadingOverlay = document.getElementById('loadingOverlay');
-    const submitBtn = document.getElementById('submitBtn') as HTMLButtonElement | null;
+    const submitBtn = document.getElementById('submitBtn');
 
     if (loadingOverlay) loadingOverlay.style.display = 'flex';
     if (submitBtn) submitBtn.disabled = true;
@@ -1191,8 +1179,8 @@ function setupEmailModal() {
     const editBtn = document.getElementById('editEmailBtn');
     const closeBtns = [document.getElementById('closeEmailModal'), document.getElementById('cancelEmailBtn')];
     const confirmBtn = document.getElementById('confirmEmailBtn');
-    const emailInput = document.getElementById('email') as HTMLInputElement | null;
-    const modalInput = document.getElementById('emailModalInput') as HTMLInputElement | null;
+    const emailInput = document.getElementById('email');
+    const modalInput = document.getElementById('emailModalInput');
     const displayEmail = document.getElementById('displayedEmail');
     const errorMsg = document.getElementById('modalEmailError');
 
@@ -1221,13 +1209,13 @@ function setupEmailModal() {
 }
 
 function updateEmailDisplay() {
-    const emailInput = document.getElementById('email') as HTMLInputElement | null;
+    const emailInput = document.getElementById('email');
     const displayedEmail = document.getElementById('displayedEmail');
     if (displayedEmail && emailInput) displayedEmail.textContent = emailInput.value;
 }
 
 function setupInputMasks() {
-    const cpfInput = document.getElementById('cpf') as HTMLInputElement | null;
+    const cpfInput = document.getElementById('cpf');
     if (cpfInput) {
         cpfInput.addEventListener('input', (e) => {
             const target = e.target as HTMLInputElement;
@@ -1239,7 +1227,7 @@ function setupInputMasks() {
             target.value = v;
         });
     }
-    const phoneInput = document.getElementById('phone') as HTMLInputElement | null;
+    const phoneInput = document.getElementById('phone');
     if (phoneInput) {
         phoneInput.addEventListener('input', (e) => {
             const target = e.target as HTMLInputElement;
@@ -1253,7 +1241,7 @@ function setupInputMasks() {
     }
 
     // Listener para data do evento - buscar preços do ano
-    const eventDateInput = document.getElementById('eventDate') as HTMLInputElement | null;
+    const eventDateInput = document.getElementById('eventDate');
     if (eventDateInput) {
         eventDateInput.addEventListener('change', async (e: Event) => {
             const target = e.target as HTMLInputElement;
