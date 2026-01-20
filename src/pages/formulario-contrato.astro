@@ -851,14 +851,21 @@ function updateSoundOptions() {
     console.log('📊 Dados de pricing disponíveis:', pricingData);
     console.log('📊 Total de itens:', pricingData.length);
 
-    // Buscar opções de sonorização nos dados usando a mesma lógica do getPriceByName
+    // Buscar opções de sonorização nos dados
+    // Usa regex mais flexível para lidar com diferentes encodings
     const sound1 = pricingData.find(p => {
         const pacoteSample = p['Pacote Sample'];
         if (Array.isArray(pacoteSample)) {
-            return pacoteSample.some(pkg => pkg.value?.toLowerCase().includes('sonorização 1'));
+            return pacoteSample.some(pkg =>
+                pkg.value && (
+                    pkg.value.includes('Sonorização 1') ||
+                    pkg.value.includes('Sonoriza') && pkg.value.includes(' 1')
+                )
+            );
         }
         if (typeof pacoteSample === 'string') {
-            return pacoteSample.toLowerCase().includes('sonorização 1');
+            return pacoteSample.includes('Sonorização 1') ||
+                   (pacoteSample.includes('Sonoriza') && pacoteSample.includes(' 1'));
         }
         return false;
     });
@@ -866,10 +873,16 @@ function updateSoundOptions() {
     const sound2 = pricingData.find(p => {
         const pacoteSample = p['Pacote Sample'];
         if (Array.isArray(pacoteSample)) {
-            return pacoteSample.some(pkg => pkg.value?.toLowerCase().includes('sonorização 2'));
+            return pacoteSample.some(pkg =>
+                pkg.value && (
+                    pkg.value.includes('Sonorização 2') ||
+                    pkg.value.includes('Sonoriza') && pkg.value.includes(' 2')
+                )
+            );
         }
         if (typeof pacoteSample === 'string') {
-            return pacoteSample.toLowerCase().includes('sonorização 2');
+            return pacoteSample.includes('Sonorização 2') ||
+                   (pacoteSample.includes('Sonoriza') && pacoteSample.includes(' 2'));
         }
         return false;
     });
