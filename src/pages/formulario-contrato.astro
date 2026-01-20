@@ -1288,9 +1288,11 @@ function setupInputMasks() {
     if (eventDateInput) {
         eventDateInput.addEventListener('change', async (e: Event) => {
             const target = e.target as HTMLInputElement;
-            const date = new Date(target.value);
-            eventYear = date.getFullYear();
+            // Extrair ano diretamente da string (YYYY-MM-DD) para evitar problemas de timezone
+            const dateValue = target.value; // formato: "2027-01-01"
+            eventYear = parseInt(dateValue.split('-')[0]);
 
+            console.log('Data selecionada:', dateValue);
             console.log('Ano do evento:', eventYear);
 
             // Buscar preços do ano
