@@ -956,6 +956,15 @@ function getSoundLabel(sound: string): string {
     return sound === 'sonorizacao_1' ? 'Sonorização 1' : 'Sonorização 2';
 }
 
+function getPaymentLabel(payment: string): string {
+    const labels: { [key: string]: string } = {
+        'vista': 'À Vista',
+        '2x': '2x (30% sinal + 70% antes do evento)',
+        '3x': '3x (Parcelado)'
+    };
+    return labels[payment] || payment;
+}
+
 // Adicionar linha à tabela de resumo
 function addSummaryRow(tbody: HTMLElement, label: string, price: number) {
     const tr = document.createElement('tr');
@@ -1119,10 +1128,10 @@ async function submitForm() {
             data_evento: getInputValue('eventDate'),
             horario_cerimonia: getInputValue('ceremonyStartTime'),
             horario_convidados: getInputValue('guestArrivalTime'),
-            pacote: formation,
-            trompete: trumpet,
-            sonorizacao: sound,
-            forma_pagamento: getCheckedValue('payment'),
+            pacote: getFormationLabel(formation),
+            trompete: trumpet !== 'nenhum' ? getTrumpetLabel(trumpet) : 'Nenhum',
+            sonorizacao: sound !== 'nenhum' ? getSoundLabel(sound) : 'Nenhum',
+            forma_pagamento: getPaymentLabel(getCheckedValue('payment')),
             instrumentos_escolhidos: getCheckedValue('instruments'),
 
             // Novos campos de valores
