@@ -840,11 +840,16 @@ function updateInstruments() {
 
 function updateSoundOptions() {
     const container = document.getElementById('soundOptionsContainer');
-    if (!container) return;
+    if (!container) {
+        console.error('❌ Container soundOptionsContainer não encontrado!');
+        return;
+    }
 
     container.innerHTML = '';
 
-    console.log('🔊 Atualizando opções de sonorização...', pricingData);
+    console.log('🔊 Atualizando opções de sonorização...');
+    console.log('📊 Dados de pricing disponíveis:', pricingData);
+    console.log('📊 Total de itens:', pricingData.length);
 
     // Buscar opções de sonorização nos dados usando a mesma lógica do getPriceByName
     const sound1 = pricingData.find(p => {
