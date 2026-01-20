@@ -558,7 +558,7 @@ const googleScriptUrl =
     .radio-label { font-size: 15px; color: #333; }
 </style>
 
-<script>
+<script define:vars={{ googleScriptUrl }}>
 // Sem @ts-nocheck! TypeScript puro agora.
 
 interface InstrumentOptions {
@@ -1136,13 +1136,11 @@ async function submitForm() {
             recaptcha_token: recaptchaToken
         };
 
-        const scriptUrl = `${googleScriptUrl}`;
-
         console.log('Enviando dados para Google Apps Script...');
-        console.log('URL:', scriptUrl);
+        console.log('URL:', googleScriptUrl);
         console.log('Dados:', formData);
 
-        const response = await fetch(scriptUrl, {
+        const response = await fetch(googleScriptUrl, {
             method: 'POST',
             mode: 'no-cors',
             headers: {
